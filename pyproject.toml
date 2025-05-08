@@ -1,0 +1,31 @@
+[project]
+name = "api-restseguros"
+version = "0.1.0"
+description = "Aplicación de Seguros"
+authors = [
+    { name = "Ponce1969", email = "gompatri@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlalchemy",
+    "psycopg[binary]",
+    "python-jose[cryptography]",
+    "passlib[bcrypt]",
+    "pydantic>=2.0",  # si estás usando Pydantic v2
+    "alembic"
+]
+
+[tool.poetry]
+package-mode = false  # Esto desactiva el modo empaquetado (ideal para proyectos backend o internos)
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.15.0"
+ruff = "^0.11.8"
+pytest = "^7.4.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
