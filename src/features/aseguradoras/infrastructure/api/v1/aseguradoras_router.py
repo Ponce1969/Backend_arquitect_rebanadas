@@ -1,0 +1,95 @@
+from typing import List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from infrastructure.database.database import get_db
+from features.aseguradoras.application.dtos import AseguradoraCreate, AseguradoraUpdate, AseguradoraResponse
+from features.aseguradoras.application.use_cases import (
+    CrearAseguradoraUseCase,
+    ObtenerAseguradoraUseCase,
+    ListarAseguradorasUseCase,
+    ActualizarAseguradoraUseCase,
+    EliminarAseguradoraUseCase,
+)
+from features.aseguradoras.infrastructure.repositories import SQLAlchemyAseguradoraRepository
+
+
+router = APIRouter(prefix="/aseguradoras", tags=["aseguradoras"])
+
+
+@router.post("/", response_model=AseguradoraResponse, status_code=status.HTTP_201_CREATED)
+def crear_aseguradora(
+    aseguradora: AseguradoraCreate, db: Session = Depends(get_db)
+) -> AseguradoraResponse:
+    """Crea una nueva aseguradora."""
+    try:
+        repository = SQLAlchemyAseguradoraRepository(db)
+        use_case = CrearAseguradoraUseCase(repository)
+        return use_case.execute(aseguradora)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al crear aseguradora: {str(e)}",
+        )
+
+
+@router.get("/{aseguradora_id}", response_model=AseguradoraResponse)
+def obtener_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> AseguradoraResponse:
+    """Obtiene una aseguradora por su ID."""
+    repository = SQLAlchemyAseguradoraRepository(db)
+    use_case = ObtenerAseguradoraUseCase(repository)
+    aseguradora = use_case.execute(aseguradora_id)
+    if not aseguradora:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Aseguradora con ID {aseguradora_id} no encontrada",
+        )
+    return aseguradora
+
+
+@router.get("/", response_model=List[AseguradoraResponse])
+def listar_aseguradoras(db: Session = Depends(get_db)) -> List[AseguradoraResponse]:
+    """Lista todas las aseguradoras."""
+    repository = SQLAlchemyAseguradoraRepository(db)
+    use_case = ListarAseguradorasUseCase(repository)
+    return use_case.execute()
+
+
+@router.put("/{aseguradora_id}", response_model=AseguradoraResponse)
+def actualizar_aseguradora(
+    aseguradora_id: int, aseguradora: AseguradoraUpdate, db: Session = Depends(get_db)
+) -> AseguradoraResponse:
+    """Actualiza una aseguradora existente."""
+    try:
+        repository = SQLAlchemyAseguradoraRepository(db)
+        use_case = ActualizarAseguradoraUseCase(repository)
+        updated_aseguradora = use_case.execute(aseguradora_id, aseguradora)
+        if not updated_aseguradora:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Aseguradora con ID {aseguradora_id} no encontrada",
+            )
+        return updated_aseguradora
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al actualizar aseguradora: {str(e)}",
+        )
+
+
+@router.delete("/{aseguradora_id}", status_code=status.HTTP_204_NO_CONTENT)
+def eliminar_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> None:
+    """Elimina una aseguradora."""
+    repository = SQLAlchemyAseguradoraRepository(db)
+    use_case = EliminarAseguradoraUseCase(repository)
+    deleted = use_case.execute(aseguradora_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Aseguradora con ID {aseguradora_id} no encontrada",
+        )
