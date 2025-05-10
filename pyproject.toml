@@ -62,14 +62,20 @@ warn_unused_ignores = true
 
 # Ignorar ciertos mu00f3dulos que no tienen tipos
 [[tool.mypy.overrides]]
-module = [
-    "sqlalchemy.*",
-    "alembic.*",
-    "passlib.*",
-    "jose.*",
-]
+module = "sqlalchemy.*"
 ignore_missing_imports = true
-pytest = "^7.4.0"
+
+[[tool.mypy.overrides]]
+module = "alembic.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "passlib.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "jose.*"
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
