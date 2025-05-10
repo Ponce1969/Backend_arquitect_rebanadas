@@ -1,5 +1,6 @@
 import abc
-from typing import Optional, List, UUID
+from typing import Optional, List
+from uuid import UUID
 
 from ..domain.entities import Cliente
 

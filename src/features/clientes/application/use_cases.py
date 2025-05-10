@@ -1,4 +1,5 @@
-from typing import List, Optional, UUID
+from typing import List, Optional
+from uuid import UUID
 
 from .dtos import ClienteCreate, ClienteUpdate, ClienteResponse, ClienteSearchParams
 from .interfaces import AbstractClienteRepository

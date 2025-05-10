@@ -5,19 +5,19 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from config.settings import settings
-from infrastructure.database import get_db
-from infrastructure.security.jwt import create_access_token
-from infrastructure.security.password import PasswordHelper
+from src.config.settings import settings
+from src.infrastructure.database import get_db
+from src.infrastructure.security.jwt import create_access_token
+from src.infrastructure.security.password import PasswordHelper
 
-from features.usuarios.application.dtos import (
+from src.features.usuarios.application.dtos import (
     RegistroUsuarioCommand,
     ActualizarUsuarioCommand,
     CambiarContrasenaCommand,
     UsuarioDto,
     TokenDto
 )
-from features.usuarios.application.use_cases import (
+from src.features.usuarios.application.use_cases import (
     RegistrarUsuarioUseCase,
     ObtenerUsuarioUseCase,
     ListarUsuariosUseCase,
@@ -27,8 +27,8 @@ from features.usuarios.application.use_cases import (
     EliminarUsuarioUseCase,
     AutenticarUsuarioUseCase
 )
-from features.usuarios.infrastructure.repositories import SQLAlchemyUsuarioRepository
-from domain.shared.types import Role
+from src.features.usuarios.infrastructure.repositories import SQLAlchemyUsuarioRepository
+from src.domain.shared.types import Role
 
 # Configuración del router
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
@@ -39,7 +39,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/usuarios/login")
 
 # Dependencia para obtener el usuario actual
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    from infrastructure.security.jwt import decode_access_token
+    from src.infrastructure.security.jwt import decode_access_token
     
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

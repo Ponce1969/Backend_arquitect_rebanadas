@@ -4,11 +4,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from config.settings import settings
+from src.config.settings import settings
+
+# Convertir la URL de conexión a string si es necesario
+database_url = str(settings.SQLALCHEMY_DATABASE_URI)
 
 # Crear el motor de SQLAlchemy
 engine = create_engine(
-    settings.SQLALCHEMY_DATABASE_URI,
+    database_url,
     pool_pre_ping=True,  # Verifica la conexión antes de usarla
 )
 

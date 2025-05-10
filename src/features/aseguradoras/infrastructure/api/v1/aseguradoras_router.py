@@ -3,16 +3,16 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from infrastructure.database.database import get_db
-from features.aseguradoras.application.dtos import AseguradoraCreate, AseguradoraUpdate, AseguradoraResponse
-from features.aseguradoras.application.use_cases import (
+from src.infrastructure.database import get_db
+from src.features.aseguradoras.application.dtos import AseguradoraCreate, AseguradoraUpdate, AseguradoraResponse
+from src.features.aseguradoras.application.use_cases import (
     CrearAseguradoraUseCase,
     ObtenerAseguradoraUseCase,
     ListarAseguradorasUseCase,
     ActualizarAseguradoraUseCase,
     EliminarAseguradoraUseCase,
 )
-from features.aseguradoras.infrastructure.repositories import SQLAlchemyAseguradoraRepository
+from src.features.aseguradoras.infrastructure.repositories import SQLAlchemyAseguradoraRepository
 
 
 router = APIRouter(prefix="/aseguradoras", tags=["aseguradoras"])

@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from infrastructure.database.base import Base
-from domain.shared.types import Role
+from src.infrastructure.database import Base
+from src.domain.shared.types import Role
 from ..domain.entities import Usuario as UsuarioEntity
 
 

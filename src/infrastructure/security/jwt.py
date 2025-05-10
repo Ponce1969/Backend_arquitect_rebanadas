@@ -4,7 +4,7 @@ from typing import Optional, Dict, Any
 import jwt
 from jwt.exceptions import PyJWTError
 
-from config.settings import settings
+from src.config.settings import settings
 
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:

@@ -1,16 +1,17 @@
-from typing import List, Optional, UUID
+from typing import List, Optional
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from infrastructure.database.database import get_db
-from features.clientes.application.dtos import (
+from src.infrastructure.database import get_db
+from src.features.clientes.application.dtos import (
     ClienteCreate,
     ClienteUpdate,
     ClienteResponse,
     ClienteSearchParams,
 )
-from features.clientes.application.use_cases import (
+from src.features.clientes.application.use_cases import (
     CrearClienteUseCase,
     ObtenerClienteUseCase,
     ObtenerClientePorNumeroUseCase,
@@ -20,7 +21,7 @@ from features.clientes.application.use_cases import (
     ActualizarClienteUseCase,
     EliminarClienteUseCase,
 )
-from features.clientes.infrastructure.repositories import SQLAlchemyClienteRepository
+from src.features.clientes.infrastructure.repositories import SQLAlchemyClienteRepository
 
 
 router = APIRouter(prefix="/clientes", tags=["clientes"])

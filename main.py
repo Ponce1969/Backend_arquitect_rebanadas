@@ -1,14 +1,24 @@
+import os
+import sys
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
-from config.settings import settings
-from infrastructure.database import Base, engine
+# Agregar el directorio src al path de Python
+sys.path.append(os.path.abspath('src'))
+
+from src.config.settings import settings
+from src.infrastructure.database import Base, engine, get_db
 
 # Importar routers
-from features.aseguradoras.infrastructure.api.v1.aseguradoras_router import router as aseguradoras_router
-from features.clientes.infrastructure.api.v1.clientes_router import router as clientes_router
-from features.usuarios.infrastructure.api.v1.usuarios_router import router as usuarios_router
+from src.features.aseguradoras.infrastructure.api.v1.aseguradoras_router import router as aseguradoras_router
+from src.features.clientes.infrastructure.api.v1.clientes_router import router as clientes_router
+from src.features.usuarios.infrastructure.api.v1.usuarios_router import router as usuarios_router
+
+# Importar inicializadores de datos
+from src.features.tipos_documento.infrastructure.init_data import init_tipos_documento
+from src.features.corredores.infrastructure.init_data import init_corredores
 
 # Crear tablas en la base de datos
 Base.metadata.create_all(bind=engine)
@@ -33,6 +43,20 @@ if settings.BACKEND_CORS_ORIGINS:
 app.include_router(aseguradoras_router, prefix=settings.API_V1_STR)
 app.include_router(clientes_router, prefix=settings.API_V1_STR)
 app.include_router(usuarios_router, prefix=settings.API_V1_STR)
+
+# Evento de inicio para inicializar datos
+@app.on_event("startup")
+async def startup_event():
+    db = next(get_db())
+    try:
+        # Inicializar tipos de documento
+        init_tipos_documento(db)
+        # Inicializar corredores
+        init_corredores(db)
+    except Exception as e:
+        print(f"Error al inicializar datos: {e}")
+    finally:
+        db.close()
 
 
 @app.get("/")
