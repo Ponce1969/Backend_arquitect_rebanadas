@@ -1,15 +1,14 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 # Importamos los tipos compartidos (Roles y Permisos)
-from domain.shared.types import Role, RolePermissions
+from src.domain.shared.custom_types import Role, RolePermissions
 
 
 @dataclass
 class Usuario:
     """Entidad de Dominio para un Usuario."""
-    id: Optional[int] = None  # ID es Integer y generado por DB
+    id: int | None = None  # ID es Integer y generado por DB
     nombre: str = ""
     apellido: str = ""
     email: str = ""
@@ -19,11 +18,11 @@ class Usuario:
     is_superuser: bool = False
     role: Role = Role.CORREDOR  # Usamos el Enum Role del dominio compartido
     # Referencia al número del Corredor (si existe la asociación)
-    corredor_numero: Optional[int] = None  # Puede ser None para admins/asistentes
+    corredor_numero: int | None = None  # Puede ser None para admins/asistentes
     comision_porcentaje: float = 0.0
-    telefono: Optional[str] = None
-    fecha_creacion: Optional[datetime] = None
-    fecha_modificacion: Optional[datetime] = None
+    telefono: str | None = None
+    fecha_creacion: datetime | None = None
+    fecha_modificacion: datetime | None = None
 
     # Lógica de Dominio
     def has_permission(self, permission: str) -> bool:
