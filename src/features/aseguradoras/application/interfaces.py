@@ -1,5 +1,4 @@
 import abc
-from typing import Optional, List
 
 from ..domain.entities import Aseguradora
 
@@ -13,12 +12,12 @@ class AbstractAseguradoraRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_id(self, aseguradora_id: int) -> Optional[Aseguradora]:
+    def get_by_id(self, aseguradora_id: int) -> Aseguradora | None:
         """Obtiene una aseguradora por su ID."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_all(self) -> List[Aseguradora]:
+    def get_all(self) -> list[Aseguradora]:
         """Obtiene todas las aseguradoras."""
         raise NotImplementedError
 
@@ -33,11 +32,11 @@ class AbstractAseguradoraRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_nombre(self, nombre: str) -> Optional[Aseguradora]:
+    def get_by_nombre(self, nombre: str) -> Aseguradora | None:
         """Obtiene una aseguradora por su nombre."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_identificador_fiscal(self, identificador_fiscal: str) -> Optional[Aseguradora]:
+    def get_by_identificador_fiscal(self, identificador_fiscal: str) -> Aseguradora | None:
         """Obtiene una aseguradora por su identificador fiscal."""
         raise NotImplementedError

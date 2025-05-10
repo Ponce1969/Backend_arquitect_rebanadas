@@ -1,28 +1,26 @@
-from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from src.infrastructure.database import get_db
 from src.features.clientes.application.dtos import (
     ClienteCreate,
-    ClienteUpdate,
     ClienteResponse,
     ClienteSearchParams,
+    ClienteUpdate,
 )
 from src.features.clientes.application.use_cases import (
-    CrearClienteUseCase,
-    ObtenerClienteUseCase,
-    ObtenerClientePorNumeroUseCase,
-    ObtenerClientePorDocumentoUseCase,
-    ListarClientesUseCase,
-    BuscarClientesUseCase,
     ActualizarClienteUseCase,
+    BuscarClientesUseCase,
+    CrearClienteUseCase,
     EliminarClienteUseCase,
+    ListarClientesUseCase,
+    ObtenerClientePorDocumentoUseCase,
+    ObtenerClientePorNumeroUseCase,
+    ObtenerClienteUseCase,
 )
 from src.features.clientes.infrastructure.repositories import SQLAlchemyClienteRepository
-
+from src.infrastructure.database import get_db
 
 router = APIRouter(prefix="/clientes", tags=["clientes"])
 
@@ -91,11 +89,11 @@ def obtener_cliente_por_documento(
     return cliente
 
 
-@router.get("/", response_model=List[ClienteResponse])
+@router.get("/", response_model=list[ClienteResponse])
 def listar_clientes(
-    query: Optional[str] = Query(None, description="Término de búsqueda"),
+    query: str | None = Query(None, description="Término de búsqueda"),
     db: Session = Depends(get_db)
-) -> List[ClienteResponse]:
+) -> list[ClienteResponse]:
     """Lista todos los clientes o busca por término."""
     repository = SQLAlchemyClienteRepository(db)
     

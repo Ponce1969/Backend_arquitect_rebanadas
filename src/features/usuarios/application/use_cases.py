@@ -1,19 +1,17 @@
-from typing import List, Optional
 
-from .dtos import (
-    RegistroUsuarioCommand,
-    ActualizarUsuarioCommand,
-    CambiarContrasenaCommand,
-    LoginCommand,
-    UsuarioDto,
-    TokenDto
-)
-from .interfaces.repositories import AbstractUsuarioRepository
-from ..domain.entities import Usuario
-from domain.shared.types import Role
 
 # Importamos la utilidad de hashing de contraseñas
 from infrastructure.security.password import PasswordHelper
+
+from ..domain.entities import Usuario
+from .dtos import (
+    ActualizarUsuarioCommand,
+    CambiarContrasenaCommand,
+    LoginCommand,
+    RegistroUsuarioCommand,
+    UsuarioDto,
+)
+from .interfaces.repositories import AbstractUsuarioRepository
 
 
 class RegistrarUsuarioUseCase:
@@ -82,7 +80,7 @@ class ObtenerUsuarioUseCase:
     def __init__(self, repository: AbstractUsuarioRepository):
         self.repository = repository
 
-    def execute(self, usuario_id: int) -> Optional[UsuarioDto]:
+    def execute(self, usuario_id: int) -> UsuarioDto | None:
         usuario = self.repository.get_by_id(usuario_id)
         if not usuario:
             return None
@@ -110,7 +108,7 @@ class ListarUsuariosUseCase:
     def __init__(self, repository: AbstractUsuarioRepository):
         self.repository = repository
 
-    def execute(self) -> List[UsuarioDto]:
+    def execute(self) -> list[UsuarioDto]:
         usuarios = self.repository.get_all()
         return [
             UsuarioDto(
@@ -138,7 +136,7 @@ class ListarUsuariosPorCorredorUseCase:
     def __init__(self, repository: AbstractUsuarioRepository):
         self.repository = repository
 
-    def execute(self, corredor_numero: int) -> List[UsuarioDto]:
+    def execute(self, corredor_numero: int) -> list[UsuarioDto]:
         usuarios = self.repository.get_usuarios_by_corredor(corredor_numero)
         return [
             UsuarioDto(
@@ -166,7 +164,7 @@ class ActualizarUsuarioUseCase:
     def __init__(self, repository: AbstractUsuarioRepository):
         self.repository = repository
 
-    def execute(self, usuario_id: int, command: ActualizarUsuarioCommand) -> Optional[UsuarioDto]:
+    def execute(self, usuario_id: int, command: ActualizarUsuarioCommand) -> UsuarioDto | None:
         # Verificar si el usuario existe
         existing_usuario = self.repository.get_by_id(usuario_id)
         if not existing_usuario:
@@ -276,7 +274,7 @@ class AutenticarUsuarioUseCase:
         self.repository = repository
         self.password_helper = password_helper
 
-    def execute(self, command: LoginCommand) -> Optional[UsuarioDto]:
+    def execute(self, command: LoginCommand) -> UsuarioDto | None:
         # Obtener usuario por username
         usuario = self.repository.get_by_username(command.username)
         if not usuario or not usuario.is_active:

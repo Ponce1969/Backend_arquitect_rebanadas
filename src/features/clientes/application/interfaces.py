@@ -1,5 +1,4 @@
 import abc
-from typing import Optional, List
 from uuid import UUID
 
 from ..domain.entities import Cliente
@@ -14,27 +13,27 @@ class AbstractClienteRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_id(self, cliente_id: UUID) -> Optional[Cliente]:
+    def get_by_id(self, cliente_id: UUID) -> Cliente | None:
         """Obtiene un cliente por su ID."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_numero_cliente(self, numero_cliente: int) -> Optional[Cliente]:
+    def get_by_numero_cliente(self, numero_cliente: int) -> Cliente | None:
         """Obtiene un cliente por su número de cliente."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_numero_documento(self, numero_documento: str) -> Optional[Cliente]:
+    def get_by_numero_documento(self, numero_documento: str) -> Cliente | None:
         """Obtiene un cliente por su número de documento."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_email(self, email: str) -> Optional[Cliente]:
+    def get_by_email(self, email: str) -> Cliente | None:
         """Obtiene un cliente por su email."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_all(self) -> List[Cliente]:
+    def get_all(self) -> list[Cliente]:
         """Obtiene todos los clientes."""
         raise NotImplementedError
 
@@ -49,6 +48,6 @@ class AbstractClienteRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def search(self, query: str) -> List[Cliente]:
+    def search(self, query: str) -> list[Cliente]:
         """Busca clientes que coincidan con la consulta en nombres, apellidos o número de documento."""
         raise NotImplementedError

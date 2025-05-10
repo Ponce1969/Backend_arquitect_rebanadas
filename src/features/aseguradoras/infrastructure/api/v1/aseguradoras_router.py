@@ -1,19 +1,21 @@
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.infrastructure.database import get_db
-from src.features.aseguradoras.application.dtos import AseguradoraCreate, AseguradoraUpdate, AseguradoraResponse
+from src.features.aseguradoras.application.dtos import (
+    AseguradoraCreate,
+    AseguradoraResponse,
+    AseguradoraUpdate,
+)
 from src.features.aseguradoras.application.use_cases import (
-    CrearAseguradoraUseCase,
-    ObtenerAseguradoraUseCase,
-    ListarAseguradorasUseCase,
     ActualizarAseguradoraUseCase,
+    CrearAseguradoraUseCase,
     EliminarAseguradoraUseCase,
+    ListarAseguradorasUseCase,
+    ObtenerAseguradoraUseCase,
 )
 from src.features.aseguradoras.infrastructure.repositories import SQLAlchemyAseguradoraRepository
-
+from src.infrastructure.database import get_db
 
 router = APIRouter(prefix="/aseguradoras", tags=["aseguradoras"])
 
@@ -50,8 +52,8 @@ def obtener_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> A
     return aseguradora
 
 
-@router.get("/", response_model=List[AseguradoraResponse])
-def listar_aseguradoras(db: Session = Depends(get_db)) -> List[AseguradoraResponse]:
+@router.get("/", response_model=list[AseguradoraResponse])
+def listar_aseguradoras(db: Session = Depends(get_db)) -> list[AseguradoraResponse]:
     """Lista todas las aseguradoras."""
     repository = SQLAlchemyAseguradoraRepository(db)
     use_case = ListarAseguradorasUseCase(repository)

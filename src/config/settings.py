@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Any
+from typing import Any
 
 from pydantic import PostgresDsn, validator
 from pydantic_settings import BaseSettings
@@ -23,16 +23,16 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "postgres")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "api_seguros")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
-    SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
+    SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
     
     # Configuración de email
     SMTP_TLS: bool = True
-    SMTP_PORT: Optional[int] = None
-    SMTP_HOST: Optional[str] = None
-    SMTP_USER: Optional[str] = None
-    SMTP_PASSWORD: Optional[str] = None
-    EMAILS_FROM_EMAIL: Optional[str] = None
-    EMAILS_FROM_NAME: Optional[str] = None
+    SMTP_PORT: int | None = None
+    SMTP_HOST: str | None = None
+    SMTP_USER: str | None = None
+    SMTP_PASSWORD: str | None = None
+    EMAILS_FROM_EMAIL: str | None = None
+    EMAILS_FROM_NAME: str | None = None
     
     # Credenciales de administrador inicial
     FIRST_SUPERUSER_NAME: str = "admin"
@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:5173"
     
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: dict) -> Any:
+    def assemble_db_connection(cls, v: str | None, values: dict) -> Any:
         if isinstance(v, str):
             return v
             
@@ -60,7 +60,7 @@ class Settings(BaseSettings):
         return f"postgresql://{user}:{password}@{host}:{port}/{db}"
     
     # Configuración de CORS
-    BACKEND_CORS_ORIGINS: List[str] = [
+    BACKEND_CORS_ORIGINS: list[str] = [
         "http://localhost",
         "http://localhost:8080",
         "http://localhost:3000",
@@ -69,12 +69,12 @@ class Settings(BaseSettings):
     
     # Configuración de email
     SMTP_TLS: bool = True
-    SMTP_PORT: Optional[int] = None
-    SMTP_HOST: Optional[str] = None
-    SMTP_USER: Optional[str] = None
-    SMTP_PASSWORD: Optional[str] = None
-    EMAILS_FROM_EMAIL: Optional[str] = None
-    EMAILS_FROM_NAME: Optional[str] = None
+    SMTP_PORT: int | None = None
+    SMTP_HOST: str | None = None
+    SMTP_USER: str | None = None
+    SMTP_PASSWORD: str | None = None
+    EMAILS_FROM_EMAIL: str | None = None
+    EMAILS_FROM_NAME: str | None = None
     
     class Config:
         case_sensitive = True

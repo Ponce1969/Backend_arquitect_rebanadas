@@ -1,8 +1,7 @@
-from typing import List, Optional
 
-from .dtos import AseguradoraCreate, AseguradoraUpdate, AseguradoraResponse
-from .interfaces import AbstractAseguradoraRepository
 from ..domain.entities import Aseguradora
+from .dtos import AseguradoraCreate, AseguradoraResponse, AseguradoraUpdate
+from .interfaces import AbstractAseguradoraRepository
 
 
 class CrearAseguradoraUseCase:
@@ -61,7 +60,7 @@ class ObtenerAseguradoraUseCase:
     def __init__(self, repository: AbstractAseguradoraRepository):
         self.repository = repository
 
-    def execute(self, aseguradora_id: int) -> Optional[AseguradoraResponse]:
+    def execute(self, aseguradora_id: int) -> AseguradoraResponse | None:
         aseguradora = self.repository.get_by_id(aseguradora_id)
         if not aseguradora:
             return None
@@ -87,7 +86,7 @@ class ListarAseguradorasUseCase:
     def __init__(self, repository: AbstractAseguradoraRepository):
         self.repository = repository
 
-    def execute(self) -> List[AseguradoraResponse]:
+    def execute(self) -> list[AseguradoraResponse]:
         aseguradoras = self.repository.get_all()
         return [
             AseguradoraResponse(
@@ -113,7 +112,7 @@ class ActualizarAseguradoraUseCase:
     def __init__(self, repository: AbstractAseguradoraRepository):
         self.repository = repository
 
-    def execute(self, aseguradora_id: int, aseguradora_data: AseguradoraUpdate) -> Optional[AseguradoraResponse]:
+    def execute(self, aseguradora_id: int, aseguradora_data: AseguradoraUpdate) -> AseguradoraResponse | None:
         # Verificar si la aseguradora existe
         existing_aseguradora = self.repository.get_by_id(aseguradora_id)
         if not existing_aseguradora:

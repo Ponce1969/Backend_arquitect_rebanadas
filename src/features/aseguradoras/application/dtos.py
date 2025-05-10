@@ -1,19 +1,18 @@
 from datetime import datetime
-from typing import Optional
 
-from pydantic import BaseModel, Field, EmailStr, HttpUrl, validator
+from pydantic import BaseModel, EmailStr, Field
 
 
 class AseguradoraBase(BaseModel):
     """Modelo base para aseguradoras."""
     nombre: str = Field(..., min_length=1, max_length=100)
-    identificador_fiscal: Optional[str] = Field(None, max_length=12)
-    telefono: Optional[str] = Field(None, max_length=20)
-    direccion: Optional[str] = Field(None, max_length=200)
-    email: Optional[EmailStr] = None
-    pagina_web: Optional[str] = Field(None, max_length=100)
+    identificador_fiscal: str | None = Field(None, max_length=12)
+    telefono: str | None = Field(None, max_length=20)
+    direccion: str | None = Field(None, max_length=200)
+    email: EmailStr | None = None
+    pagina_web: str | None = Field(None, max_length=100)
     esta_activa: bool = True
-    observaciones: Optional[str] = None
+    observaciones: str | None = None
 
     class Config:
         orm_mode = True
@@ -26,14 +25,14 @@ class AseguradoraCreate(AseguradoraBase):
 
 class AseguradoraUpdate(BaseModel):
     """DTO para actualizar una aseguradora."""
-    nombre: Optional[str] = Field(None, min_length=1, max_length=100)
-    identificador_fiscal: Optional[str] = Field(None, max_length=12)
-    telefono: Optional[str] = Field(None, max_length=20)
-    direccion: Optional[str] = Field(None, max_length=200)
-    email: Optional[EmailStr] = None
-    pagina_web: Optional[str] = Field(None, max_length=100)
-    esta_activa: Optional[bool] = None
-    observaciones: Optional[str] = None
+    nombre: str | None = Field(None, min_length=1, max_length=100)
+    identificador_fiscal: str | None = Field(None, max_length=12)
+    telefono: str | None = Field(None, max_length=20)
+    direccion: str | None = Field(None, max_length=200)
+    email: EmailStr | None = None
+    pagina_web: str | None = Field(None, max_length=100)
+    esta_activa: bool | None = None
+    observaciones: str | None = None
 
     class Config:
         orm_mode = True

@@ -1,9 +1,8 @@
-from typing import List, Optional
 from uuid import UUID
 
-from .dtos import ClienteCreate, ClienteUpdate, ClienteResponse, ClienteSearchParams
-from .interfaces import AbstractClienteRepository
 from ..domain.entities import Cliente
+from .dtos import ClienteCreate, ClienteResponse, ClienteSearchParams, ClienteUpdate
+from .interfaces import AbstractClienteRepository
 
 
 class CrearClienteUseCase:
@@ -71,7 +70,7 @@ class ObtenerClienteUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self, cliente_id: UUID) -> Optional[ClienteResponse]:
+    def execute(self, cliente_id: UUID) -> ClienteResponse | None:
         cliente = self.repository.get_by_id(cliente_id)
         if not cliente:
             return None
@@ -103,7 +102,7 @@ class ObtenerClientePorNumeroUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self, numero_cliente: int) -> Optional[ClienteResponse]:
+    def execute(self, numero_cliente: int) -> ClienteResponse | None:
         cliente = self.repository.get_by_numero_cliente(numero_cliente)
         if not cliente:
             return None
@@ -135,7 +134,7 @@ class ObtenerClientePorDocumentoUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self, numero_documento: str) -> Optional[ClienteResponse]:
+    def execute(self, numero_documento: str) -> ClienteResponse | None:
         cliente = self.repository.get_by_numero_documento(numero_documento)
         if not cliente:
             return None
@@ -167,7 +166,7 @@ class ListarClientesUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self) -> List[ClienteResponse]:
+    def execute(self) -> list[ClienteResponse]:
         clientes = self.repository.get_all()
         return [
             ClienteResponse(
@@ -199,7 +198,7 @@ class BuscarClientesUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self, search_params: ClienteSearchParams) -> List[ClienteResponse]:
+    def execute(self, search_params: ClienteSearchParams) -> list[ClienteResponse]:
         # Por ahora solo implementamos búsqueda por texto
         if search_params.query:
             clientes = self.repository.search(search_params.query)
@@ -235,7 +234,7 @@ class ActualizarClienteUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self, cliente_id: UUID, cliente_data: ClienteUpdate) -> Optional[ClienteResponse]:
+    def execute(self, cliente_id: UUID, cliente_data: ClienteUpdate) -> ClienteResponse | None:
         # Verificar si el cliente existe
         existing_cliente = self.repository.get_by_id(cliente_id)
         if not existing_cliente:

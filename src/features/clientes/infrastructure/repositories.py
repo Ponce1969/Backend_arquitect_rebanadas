@@ -1,5 +1,5 @@
-from typing import List, Optional
 from uuid import UUID
+
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -64,31 +64,31 @@ class SQLAlchemyClienteRepository(AbstractClienteRepository):
         self.session.flush()  # Para obtener el ID generado
         return self._map_to_domain(db_cliente)
 
-    def get_by_id(self, cliente_id: UUID) -> Optional[ClienteDomain]:
+    def get_by_id(self, cliente_id: UUID) -> ClienteDomain | None:
         db_cliente = self.session.query(ClienteModel).filter(
             ClienteModel.id == cliente_id
         ).first()
         return self._map_to_domain(db_cliente) if db_cliente else None
 
-    def get_by_numero_cliente(self, numero_cliente: int) -> Optional[ClienteDomain]:
+    def get_by_numero_cliente(self, numero_cliente: int) -> ClienteDomain | None:
         db_cliente = self.session.query(ClienteModel).filter(
             ClienteModel.numero_cliente == numero_cliente
         ).first()
         return self._map_to_domain(db_cliente) if db_cliente else None
 
-    def get_by_numero_documento(self, numero_documento: str) -> Optional[ClienteDomain]:
+    def get_by_numero_documento(self, numero_documento: str) -> ClienteDomain | None:
         db_cliente = self.session.query(ClienteModel).filter(
             ClienteModel.numero_documento == numero_documento
         ).first()
         return self._map_to_domain(db_cliente) if db_cliente else None
 
-    def get_by_email(self, email: str) -> Optional[ClienteDomain]:
+    def get_by_email(self, email: str) -> ClienteDomain | None:
         db_cliente = self.session.query(ClienteModel).filter(
             ClienteModel.mail == email
         ).first()
         return self._map_to_domain(db_cliente) if db_cliente else None
 
-    def get_all(self) -> List[ClienteDomain]:
+    def get_all(self) -> list[ClienteDomain]:
         db_clientes = self.session.query(ClienteModel).all()
         return [self._map_to_domain(db_cliente) for db_cliente in db_clientes]
 
@@ -125,7 +125,7 @@ class SQLAlchemyClienteRepository(AbstractClienteRepository):
             return True
         return False
 
-    def search(self, query: str) -> List[ClienteDomain]:
+    def search(self, query: str) -> list[ClienteDomain]:
         # Búsqueda por nombres, apellidos o número de documento
         search_pattern = f"%{query}%"
         db_clientes = self.session.query(ClienteModel).filter(

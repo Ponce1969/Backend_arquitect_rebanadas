@@ -1,7 +1,6 @@
-from typing import List, Optional
 
-from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session, joinedload
 
 from ..application.interfaces.repositories import AbstractUsuarioRepository
 from ..domain.entities import Usuario as UsuarioEntity
@@ -53,28 +52,28 @@ class SQLAlchemyUsuarioRepository(AbstractUsuarioRepository):
             self.session.rollback()
             raise Exception(f"Error al crear usuario: {e}")
 
-    def get_by_id(self, usuario_id: int) -> Optional[UsuarioEntity]:
+    def get_by_id(self, usuario_id: int) -> UsuarioEntity | None:
         """Obtiene un usuario de la DB por su ID, con relaciones cargadas."""
         db_usuario = self._get_base_query().filter(UsuarioModel.id == usuario_id).first()
         if db_usuario:
             return db_usuario.to_entity()  # Mapeo de Modelo a Entidad
         return None
 
-    def get_by_username(self, username: str) -> Optional[UsuarioEntity]:
+    def get_by_username(self, username: str) -> UsuarioEntity | None:
         """Obtiene un usuario por su nombre de usuario, con relaciones cargadas."""
         db_usuario = self._get_base_query().filter(UsuarioModel.username == username).first()
         if db_usuario:
             return db_usuario.to_entity()
         return None
 
-    def get_by_email(self, email: str) -> Optional[UsuarioEntity]:
+    def get_by_email(self, email: str) -> UsuarioEntity | None:
         """Obtiene un usuario por su correo electrónico, con relaciones cargadas."""
         db_usuario = self._get_base_query().filter(UsuarioModel.email == email).first()
         if db_usuario:
             return db_usuario.to_entity()
         return None
 
-    def get_all(self) -> List[UsuarioEntity]:
+    def get_all(self) -> list[UsuarioEntity]:
         """Obtiene todos los usuarios, con relaciones cargadas."""
         db_usuarios = self._get_base_query().all()
         return [db_usuario.to_entity() for db_usuario in db_usuarios]
@@ -128,12 +127,12 @@ class SQLAlchemyUsuarioRepository(AbstractUsuarioRepository):
             return True
         return False
 
-    def get_usuarios_by_corredor(self, corredor_numero: int) -> List[UsuarioEntity]:
+    def get_usuarios_by_corredor(self, corredor_numero: int) -> list[UsuarioEntity]:
         """Obtiene usuarios asociados a un corredor específico, con relaciones cargadas."""
         db_usuarios = self._get_base_query().filter(UsuarioModel.corredor_numero == corredor_numero).all()
         return [db_usuario.to_entity() for db_usuario in db_usuarios]
 
-    def get_hashed_password(self, usuario_id: int) -> Optional[str]:
+    def get_hashed_password(self, usuario_id: int) -> str | None:
         """Obtiene la contraseña hasheada de un usuario por su ID."""
         db_usuario = self.session.query(UsuarioModel).filter(UsuarioModel.id == usuario_id).first()
         if db_usuario:

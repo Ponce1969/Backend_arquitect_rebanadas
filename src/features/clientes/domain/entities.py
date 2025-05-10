@@ -1,29 +1,28 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Optional, List
 from uuid import UUID
 
 
 @dataclass
 class Cliente:
     """Entidad de dominio que representa un cliente."""
-    id: Optional[UUID] = None
-    numero_cliente: Optional[int] = None
+    id: UUID | None = None
+    numero_cliente: int | None = None
     nombres: str = ""
     apellidos: str = ""
     tipo_documento_id: int = 0
     numero_documento: str = ""
-    fecha_nacimiento: Optional[date] = None
+    fecha_nacimiento: date | None = None
     direccion: str = ""
-    localidad: Optional[str] = None
+    localidad: str | None = None
     telefonos: str = ""
     movil: str = ""
     mail: str = ""
-    observaciones: Optional[str] = None
+    observaciones: str | None = None
     creado_por_id: int = 0
     modificado_por_id: int = 0
-    fecha_creacion: Optional[datetime] = None
-    fecha_modificacion: Optional[datetime] = None
+    fecha_creacion: datetime | None = None
+    fecha_modificacion: datetime | None = None
     # Relaciones - comentadas hasta que se implementen las entidades relacionadas
     # tipo_documento: Optional['TipoDocumento'] = None
     # creado_por_usuario: Optional['Usuario'] = None

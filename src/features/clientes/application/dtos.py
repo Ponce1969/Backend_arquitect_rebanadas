@@ -1,8 +1,7 @@
 from datetime import date, datetime
-from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field, EmailStr, validator
+from pydantic import BaseModel, EmailStr, Field
 
 
 class ClienteBase(BaseModel):
@@ -13,11 +12,11 @@ class ClienteBase(BaseModel):
     numero_documento: str = Field(..., min_length=1, max_length=50)
     fecha_nacimiento: date
     direccion: str = Field(..., min_length=1, max_length=200)
-    localidad: Optional[str] = Field(None, max_length=50)
+    localidad: str | None = Field(None, max_length=50)
     telefonos: str = Field(..., min_length=1, max_length=100)
     movil: str = Field(..., min_length=1, max_length=100)
     mail: EmailStr
-    observaciones: Optional[str] = None
+    observaciones: str | None = None
 
     class Config:
         orm_mode = True
@@ -31,17 +30,17 @@ class ClienteCreate(ClienteBase):
 
 class ClienteUpdate(BaseModel):
     """DTO para actualizar un cliente."""
-    nombres: Optional[str] = Field(None, min_length=1, max_length=100)
-    apellidos: Optional[str] = Field(None, min_length=1, max_length=100)
-    tipo_documento_id: Optional[int] = None
-    numero_documento: Optional[str] = Field(None, min_length=1, max_length=50)
-    fecha_nacimiento: Optional[date] = None
-    direccion: Optional[str] = Field(None, min_length=1, max_length=200)
-    localidad: Optional[str] = Field(None, max_length=50)
-    telefonos: Optional[str] = Field(None, min_length=1, max_length=100)
-    movil: Optional[str] = Field(None, min_length=1, max_length=100)
-    mail: Optional[EmailStr] = None
-    observaciones: Optional[str] = None
+    nombres: str | None = Field(None, min_length=1, max_length=100)
+    apellidos: str | None = Field(None, min_length=1, max_length=100)
+    tipo_documento_id: int | None = None
+    numero_documento: str | None = Field(None, min_length=1, max_length=50)
+    fecha_nacimiento: date | None = None
+    direccion: str | None = Field(None, min_length=1, max_length=200)
+    localidad: str | None = Field(None, max_length=50)
+    telefonos: str | None = Field(None, min_length=1, max_length=100)
+    movil: str | None = Field(None, min_length=1, max_length=100)
+    mail: EmailStr | None = None
+    observaciones: str | None = None
     modificado_por_id: int
 
     class Config:
@@ -65,6 +64,6 @@ class ClienteResponse(ClienteInDB):
 
 class ClienteSearchParams(BaseModel):
     """Parámetros para búsqueda de clientes."""
-    query: Optional[str] = None
-    tipo_documento_id: Optional[int] = None
-    localidad: Optional[str] = None
+    query: str | None = None
+    tipo_documento_id: int | None = None
+    localidad: str | None = None

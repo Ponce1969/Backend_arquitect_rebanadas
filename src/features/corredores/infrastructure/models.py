@@ -1,24 +1,23 @@
-import uuid # Importar UUID para referenciar clientes
-from datetime import datetime, date, timezone
+from datetime import date, datetime, timezone
 
 from sqlalchemy import (
     Column,
     Date,
-    DateTime,
     ForeignKey,
     Integer,
     String,
-    Text,
-    UniqueConstraint # Importar para constraint u00fanico compuesto
+    Text,  # Importar para constraint u00fanico compuesto
 )
-from sqlalchemy.dialects.postgresql import UUID as SQLAlchemyUUID # Usar alias para evitar conflicto con uuid.UUID
+from sqlalchemy.dialects.postgresql import (
+    UUID as SQLAlchemyUUID,  # Usar alias para evitar conflicto con uuid.UUID
+)
 from sqlalchemy.orm import relationship
-
-# Importamos la Base desde la infraestructura compartida
-from src.infrastructure.database import Base
 
 # Importamos la Entidad de Dominio para mapeo
 from src.features.corredores.domain.entities import Corredor as CorredorEntity
+
+# Importamos la Base desde la infraestructura compartida
+from src.infrastructure.database import Base
 
 
 # Definiciou00f3n de la funciou00f3n helper para el tiempo (si no estou00e1 en un util compartido)

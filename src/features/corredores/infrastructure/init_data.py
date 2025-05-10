@@ -1,5 +1,6 @@
-from sqlalchemy.orm import Session
 from datetime import date
+
+from sqlalchemy.orm import Session
 
 from src.features.corredores.infrastructure.models import Corredor
 

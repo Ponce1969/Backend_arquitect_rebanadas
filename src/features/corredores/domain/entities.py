@@ -1,7 +1,5 @@
-import uuid # Mantener por si otras entidades referenciadas usan UUID
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Optional, List
 
 # Importamos Entidades de Dominio relacionadas si es necesario
 # from src.features.usuarios.domain.entities import Usuario
@@ -18,21 +16,21 @@ class Corredor:
     direccion: str
     localidad: str
     mail: str
-    tipo: Optional[str] = "corredor"
-    telefonos: Optional[str] = None
-    movil: Optional[str] = None
-    observaciones: Optional[str] = None
-    fecha_alta: Optional[date] = None
-    fecha_baja: Optional[date] = None
-    matricula: Optional[str] = None
-    especializacion: Optional[str] = None
+    tipo: str | None = "corredor"
+    telefonos: str | None = None
+    movil: str | None = None
+    observaciones: str | None = None
+    fecha_alta: date | None = None
+    fecha_baja: date | None = None
+    matricula: str | None = None
+    especializacion: str | None = None
 
     # Relaciones a Entidades de Dominio
     # Un Corredor puede tener varios Usuarios asociados (ej: administrador, asistente, él mismo)
-    usuarios: List = field(default_factory=list)
+    usuarios: list = field(default_factory=list)
     # Un Corredor tiene muchos Clientes (a través de la tabla intermedia)
     # La lista aquí representa los Clientes asociados, no la entidad intermedia ClienteCorredor
-    clientes_asociados: List = field(default_factory=list)
+    clientes_asociados: list = field(default_factory=list)
     # Podrías añadir movimientos_vigencias si es relevante en este nivel de dominio
 
     # Métodos de negocio (ej: activar/desactivar corredor, añadir cliente)

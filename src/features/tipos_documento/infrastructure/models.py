@@ -1,8 +1,8 @@
 from sqlalchemy import Boolean, Column, Integer, String, Text
 from sqlalchemy.orm import relationship
 
-from src.infrastructure.database import Base
 from src.features.tipos_documento.domain.entities import TipoDocumento as TipoDocumentoEntity
+from src.infrastructure.database import Base
 
 
 class TipoDocumento(Base):

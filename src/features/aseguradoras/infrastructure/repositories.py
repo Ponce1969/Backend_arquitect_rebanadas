@@ -1,4 +1,3 @@
-from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -51,13 +50,13 @@ class SQLAlchemyAseguradoraRepository(AbstractAseguradoraRepository):
         self.session.flush()  # Para obtener el ID generado
         return self._map_to_domain(db_aseguradora)
 
-    def get_by_id(self, aseguradora_id: int) -> Optional[AseguradoraDomain]:
+    def get_by_id(self, aseguradora_id: int) -> AseguradoraDomain | None:
         db_aseguradora = self.session.query(AseguradoraModel).filter(
             AseguradoraModel.id == aseguradora_id
         ).first()
         return self._map_to_domain(db_aseguradora) if db_aseguradora else None
 
-    def get_all(self) -> List[AseguradoraDomain]:
+    def get_all(self) -> list[AseguradoraDomain]:
         db_aseguradoras = self.session.query(AseguradoraModel).all()
         return [self._map_to_domain(db_aseguradora) for db_aseguradora in db_aseguradoras]
 
@@ -87,13 +86,13 @@ class SQLAlchemyAseguradoraRepository(AbstractAseguradoraRepository):
             return True
         return False
 
-    def get_by_nombre(self, nombre: str) -> Optional[AseguradoraDomain]:
+    def get_by_nombre(self, nombre: str) -> AseguradoraDomain | None:
         db_aseguradora = self.session.query(AseguradoraModel).filter(
             AseguradoraModel.nombre == nombre
         ).first()
         return self._map_to_domain(db_aseguradora) if db_aseguradora else None
 
-    def get_by_identificador_fiscal(self, identificador_fiscal: str) -> Optional[AseguradoraDomain]:
+    def get_by_identificador_fiscal(self, identificador_fiscal: str) -> AseguradoraDomain | None:
         db_aseguradora = self.session.query(AseguradoraModel).filter(
             AseguradoraModel.identificador_fiscal == identificador_fiscal
         ).first()

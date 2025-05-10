@@ -1,5 +1,4 @@
 import abc
-from typing import List, Optional
 
 # Importamos la Entidad de Dominio Usuario
 from features.usuarios.domain.entities import Usuario
@@ -14,22 +13,22 @@ class AbstractUsuarioRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_id(self, usuario_id: int) -> Optional[Usuario]:
+    def get_by_id(self, usuario_id: int) -> Usuario | None:
         """Obtiene un usuario por su ID."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_username(self, username: str) -> Optional[Usuario]:
+    def get_by_username(self, username: str) -> Usuario | None:
         """Obtiene un usuario por su nombre de usuario."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_email(self, email: str) -> Optional[Usuario]:
+    def get_by_email(self, email: str) -> Usuario | None:
         """Obtiene un usuario por su correo electrónico."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_all(self) -> List[Usuario]:
+    def get_all(self) -> list[Usuario]:
         """Obtiene todos los usuarios."""
         raise NotImplementedError
 
@@ -44,12 +43,12 @@ class AbstractUsuarioRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_usuarios_by_corredor(self, corredor_numero: int) -> List[Usuario]:
+    def get_usuarios_by_corredor(self, corredor_numero: int) -> list[Usuario]:
         """Obtiene usuarios asociados a un corredor específico."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_hashed_password(self, usuario_id: int) -> Optional[str]:
+    def get_hashed_password(self, usuario_id: int) -> str | None:
         """Obtiene la contraseña hasheada de un usuario por su ID."""
         raise NotImplementedError
         

@@ -1,34 +1,32 @@
 from datetime import timedelta
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from src.config.settings import settings
+from src.features.usuarios.application.dtos import (
+    ActualizarUsuarioCommand,
+    CambiarContrasenaCommand,
+    RegistroUsuarioCommand,
+    TokenDto,
+    UsuarioDto,
+)
+from src.features.usuarios.application.use_cases import (
+    ActualizarUsuarioUseCase,
+    AutenticarUsuarioUseCase,
+    CambiarContrasenaUseCase,
+    EliminarUsuarioUseCase,
+    ListarUsuariosPorCorredorUseCase,
+    ListarUsuariosUseCase,
+    ObtenerUsuarioUseCase,
+    RegistrarUsuarioUseCase,
+)
+from src.features.usuarios.infrastructure.repositories import SQLAlchemyUsuarioRepository
 from src.infrastructure.database import get_db
 from src.infrastructure.security.jwt import create_access_token
 from src.infrastructure.security.password import PasswordHelper
-
-from src.features.usuarios.application.dtos import (
-    RegistroUsuarioCommand,
-    ActualizarUsuarioCommand,
-    CambiarContrasenaCommand,
-    UsuarioDto,
-    TokenDto
-)
-from src.features.usuarios.application.use_cases import (
-    RegistrarUsuarioUseCase,
-    ObtenerUsuarioUseCase,
-    ListarUsuariosUseCase,
-    ListarUsuariosPorCorredorUseCase,
-    ActualizarUsuarioUseCase,
-    CambiarContrasenaUseCase,
-    EliminarUsuarioUseCase,
-    AutenticarUsuarioUseCase
-)
-from src.features.usuarios.infrastructure.repositories import SQLAlchemyUsuarioRepository
-from src.domain.shared.types import Role
 
 # Configuración del router
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
@@ -94,7 +92,7 @@ async def registrar_usuario(
         )
 
 
-@router.get("/", response_model=List[UsuarioDto])
+@router.get("/", response_model=list[UsuarioDto])
 async def listar_usuarios(
     db: Session = Depends(get_db),
     current_user: UsuarioDto = Depends(get_admin_user)
@@ -105,7 +103,7 @@ async def listar_usuarios(
     return use_case.execute()
 
 
-@router.get("/corredor/{corredor_numero}", response_model=List[UsuarioDto])
+@router.get("/corredor/{corredor_numero}", response_model=list[UsuarioDto])
 async def listar_usuarios_por_corredor(
     corredor_numero: int,
     db: Session = Depends(get_db),
