@@ -15,7 +15,12 @@ dependencies = [
     "python-jose[cryptography]",
     "passlib[bcrypt]",
     "pydantic>=2.0",  # si estás usando Pydantic v2
-    "alembic"
+    "pydantic-settings",
+    "pydantic[email]",
+    "alembic",
+    "python-multipart",  # para formularios OAuth2
+    "python-dotenv",
+    "email-validator"
 ]
 
 [tool.poetry]
