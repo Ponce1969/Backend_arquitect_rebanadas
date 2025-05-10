@@ -59,6 +59,9 @@ strict_optional = true
 warn_redundant_casts = true
 warn_return_any = true
 warn_unused_ignores = true
+# Configuraciones para manejar mu00f3dulos duplicados en arquitectura por slices
+explicit_package_bases = true
+namespace_packages = true
 
 # Ignorar ciertos mu00f3dulos que no tienen tipos
 [[tool.mypy.overrides]]
