@@ -29,6 +29,46 @@ package-mode = false  # Esto desactiva el modo empaquetado (ideal para proyectos
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.15.0"
 ruff = "^0.11.8"
+types-sqlalchemy = "^2.0.0"
+types-python-jose = "^3.3.0"
+types-passlib = "^1.7.0"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# Habilitar linters
+lint.select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "I",  # isort
+    "UP", # pyupgrade
+    "N",  # pep8-naming
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+
+[tool.mypy]
+python_version = "3.10"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+strict_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_ignores = true
+
+# Ignorar ciertos mu00f3dulos que no tienen tipos
+[[tool.mypy.overrides]]
+module = [
+    "sqlalchemy.*",
+    "alembic.*",
+    "passlib.*",
+    "jose.*",
+]
+ignore_missing_imports = true
 pytest = "^7.4.0"
 
 [build-system]

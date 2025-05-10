@@ -12,3 +12,10 @@ alembic>=1.12.0
 python-multipart>=0.0.6
 python-dotenv>=1.0.0
 email-validator>=2.0.0
+
+# Herramientas de desarrollo
+ruff>=0.1.0
+mypy>=1.5.0
+types-sqlalchemy>=2.0.0
+types-python-jose>=3.3.0
+types-passlib>=1.7.0
