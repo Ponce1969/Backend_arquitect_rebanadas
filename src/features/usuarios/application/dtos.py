@@ -1,10 +1,9 @@
 from datetime import datetime
-from typing import Optional
 
-from pydantic import BaseModel, Field, EmailStr, validator
+from pydantic import BaseModel, EmailStr, Field, validator
 
 # Importamos el Enum de Roles
-from domain.shared.types import Role
+from src.domain.shared.custom_types import Role
 
 
 # DTO para el registro de usuario (entrada a RegistrarUsuarioUseCase)
@@ -17,9 +16,9 @@ class RegistroUsuarioCommand(BaseModel):
     is_active: bool = True
     is_superuser: bool = False
     role: Role = Role.CORREDOR  # Usamos el Enum
-    corredor_numero: Optional[int] = None  # Campo para asociar si el rol es corredor
-    comision_porcentaje: Optional[float] = 0.0
-    telefono: Optional[str] = Field(None, max_length=20)
+    corredor_numero: int | None = None  # Campo para asociar si el rol es corredor
+    comision_porcentaje: float | None = 0.0
+    telefono: str | None = Field(None, max_length=20)
 
     @validator('role', 'corredor_numero')
     def validate_role_corredor(cls, v, values, **kwargs):
@@ -36,16 +35,16 @@ class RegistroUsuarioCommand(BaseModel):
 
 # DTO para actualizar un usuario (entrada a ActualizarUsuarioUseCase)
 class ActualizarUsuarioCommand(BaseModel):
-    nombre: Optional[str] = Field(None, min_length=1, max_length=64)
-    apellido: Optional[str] = Field(None, min_length=1, max_length=64)
-    email: Optional[EmailStr] = None
-    username: Optional[str] = Field(None, min_length=3, max_length=64)
-    is_active: Optional[bool] = None
-    is_superuser: Optional[bool] = None
-    role: Optional[Role] = None
-    corredor_numero: Optional[int] = None
-    comision_porcentaje: Optional[float] = None
-    telefono: Optional[str] = Field(None, max_length=20)
+    nombre: str | None = Field(None, min_length=1, max_length=64)
+    apellido: str | None = Field(None, min_length=1, max_length=64)
+    email: EmailStr | None = None
+    username: str | None = Field(None, min_length=3, max_length=64)
+    is_active: bool | None = None
+    is_superuser: bool | None = None
+    role: Role | None = None
+    corredor_numero: int | None = None
+    comision_porcentaje: float | None = None
+    telefono: str | None = Field(None, max_length=20)
 
 
 # DTO para cambiar la contraseña (entrada a CambiarContrasenaUseCase)
@@ -65,9 +64,9 @@ class UsuarioDto(BaseModel):
     is_active: bool
     is_superuser: bool
     role: Role  # Retornamos el Enum
-    corredor_numero: Optional[int] = None
-    comision_porcentaje: Optional[float] = None
-    telefono: Optional[str] = None
+    corredor_numero: int | None = None
+    comision_porcentaje: float | None = None
+    telefono: str | None = None
     fecha_creacion: datetime
     fecha_modificacion: datetime
 
