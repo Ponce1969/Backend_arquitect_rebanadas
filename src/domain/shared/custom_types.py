@@ -1,5 +1,5 @@
 import enum
-from typing import Set, Dict
+
 
 # Enum para los roles de usuario
 class Role(str, enum.Enum):
@@ -11,7 +11,7 @@ class Role(str, enum.Enum):
 # Diccionario para definir permisos por rol
 # Esto es un ejemplo simple. En un sistema real, podría ser más complejo.
 class RolePermissions:
-    _permissions: Dict[Role, Set[str]] = {
+    _permissions: dict[Role, set[str]] = {
         Role.ADMIN: {
             "aseguradoras:read", "aseguradoras:write",
             "clientes:read", "clientes:write", "clientes:view_all",
@@ -36,7 +36,7 @@ class RolePermissions:
     }
 
     @staticmethod
-    def get_permissions(role: Role) -> Set[str]:
+    def get_permissions(role: Role) -> set[str]:
         """Obtiene el conjunto de permisos para un rol dado."""
         return RolePermissions._permissions.get(role, set())
 
