@@ -48,3 +48,7 @@ class AseguradoraInDB(AseguradoraBase):
 class AseguradoraResponse(AseguradoraInDB):
     """DTO para respuesta de aseguradora."""
     pass
+
+
+# Alias para compatibilidad con otros slices
+AseguradoraDto = AseguradoraResponse

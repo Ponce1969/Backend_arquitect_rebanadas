@@ -15,9 +15,11 @@ from src.infrastructure.database import Base, engine, get_db
 from src.features.aseguradoras.infrastructure.api.v1.aseguradoras_router import router as aseguradoras_router
 from src.features.clientes.infrastructure.api.v1.clientes_router import router as clientes_router
 from src.features.usuarios.infrastructure.api.v1.usuarios_router import router as usuarios_router
+from src.features.polizas.infrastructure.api.v1.polizas_router import router as polizas_router
+from src.features.tipos_seguros.infrastructure.api.v1.tipos_seguro_router import router as tipos_seguro_router
 
 # Importar inicializadores de datos
-from src.features.tipos_documento.infrastructure.init_data import init_tipos_documento
+from src.infrastructure.database.init_data import init_tipos_documento
 from src.features.corredores.infrastructure.init_data import init_corredores
 
 # Crear tablas en la base de datos
@@ -43,6 +45,8 @@ if settings.BACKEND_CORS_ORIGINS:
 app.include_router(aseguradoras_router, prefix=settings.API_V1_STR)
 app.include_router(clientes_router, prefix=settings.API_V1_STR)
 app.include_router(usuarios_router, prefix=settings.API_V1_STR)
+app.include_router(polizas_router, prefix=settings.API_V1_STR)
+app.include_router(tipos_seguro_router, prefix=settings.API_V1_STR)
 
 # Evento de inicio para inicializar datos
 @app.on_event("startup")

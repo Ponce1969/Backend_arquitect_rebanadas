@@ -62,6 +62,10 @@ class ClienteResponse(ClienteInDB):
     pass
 
 
+# Alias para compatibilidad con otros slices
+ClienteDto = ClienteResponse
+
+
 class ClienteSearchParams(BaseModel):
     """Parámetros para búsqueda de clientes."""
     query: str | None = None

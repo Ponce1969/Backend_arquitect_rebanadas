@@ -2,7 +2,7 @@ from uuid import UUID
 
 from ..domain.entities import Cliente
 from .dtos import ClienteCreate, ClienteResponse, ClienteSearchParams, ClienteUpdate
-from .interfaces import AbstractClienteRepository
+from .interfaces.repositories import AbstractClienteRepository
 
 
 class CrearClienteUseCase:

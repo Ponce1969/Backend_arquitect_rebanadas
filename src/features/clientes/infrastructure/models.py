@@ -15,6 +15,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from src.infrastructure.database import Base
+from src.infrastructure.database.models import TipoDocumento as TipoDocumentoModel
 
 
 def get_utc_now():
@@ -91,7 +92,7 @@ class Cliente(Base):
         lazy="selectin",
     )
     tipo_documento_rel = relationship(
-        "TipoDocumento",
+        TipoDocumentoModel,
         back_populates="clientes",
         lazy="selectin",
     )

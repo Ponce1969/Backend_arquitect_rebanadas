@@ -87,7 +87,7 @@ class Corredor(Base):
         lazy="selectin" # Carga eager
     )
     # Relaciou00f3n con movimientos (modelo MovimientoVigencia)
-    # movimientos = relationship("MovimientoVigencia", back_populates="corredor_rel", lazy="selectin")
+    movimientos = relationship("MovimientoVigencia", back_populates="corredor_rel", lazy="selectin")
 
     # Mou00e9todos para mapear a Entidad de Dominio
     def to_entity(self) -> CorredorEntity:

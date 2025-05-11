@@ -1,6 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime
+from typing import List, Optional
 from uuid import UUID
+
+# Importamos la entidad TipoDocumento del dominio compartido
+from src.domain.shared.entities import TipoDocumento
 
 
 @dataclass
@@ -23,9 +27,9 @@ class Cliente:
     modificado_por_id: int = 0
     fecha_creacion: datetime | None = None
     fecha_modificacion: datetime | None = None
-    # Relaciones - comentadas hasta que se implementen las entidades relacionadas
-    # tipo_documento: Optional['TipoDocumento'] = None
+    # Relaciones
+    tipo_documento: Optional[TipoDocumento] = None
     # creado_por_usuario: Optional['Usuario'] = None
     # modificado_por_usuario: Optional['Usuario'] = None
-    # corredores_asociados: List['ClienteCorredor'] = field(default_factory=list)
-    # movimientos_vigencias: List['MovimientoVigencia'] = field(default_factory=list)
+    corredores_asociados: List[object] = field(default_factory=list)  # Tipo 'ClienteCorredor'
+    movimientos_vigencias: List[object] = field(default_factory=list)  # Tipo 'MovimientoVigencia'
