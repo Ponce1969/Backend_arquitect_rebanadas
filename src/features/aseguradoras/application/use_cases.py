@@ -1,7 +1,7 @@
 
 from ..domain.entities import Aseguradora
 from .dtos import AseguradoraCreate, AseguradoraResponse, AseguradoraUpdate
-from .interfaces import AbstractAseguradoraRepository
+from .interfaces.repositories import AbstractAseguradoraRepository
 
 
 class CrearAseguradoraUseCase:
@@ -172,3 +172,40 @@ class EliminarAseguradoraUseCase:
 
     def execute(self, aseguradora_id: int) -> bool:
         return self.repository.delete(aseguradora_id)
+
+
+class BuscarAseguradorasUseCase:
+    """Caso de uso para buscar aseguradoras según criterios específicos."""
+
+    def __init__(self, repository: AbstractAseguradoraRepository):
+        self.repository = repository
+
+    def execute(self, query: str = None, esta_activa: bool = None) -> list[AseguradoraResponse]:
+        """Busca aseguradoras según criterios específicos.
+        
+        Args:
+            query: Texto para buscar en nombre, identificador fiscal o dirección
+            esta_activa: Filtrar por estado activo/inactivo
+            
+        Returns:
+            Lista de aseguradoras que coinciden con los criterios de búsqueda
+        """
+        aseguradoras = self.repository.search(query=query, esta_activa=esta_activa)
+        
+        # Convertir entidades de dominio a DTOs de respuesta
+        return [
+            AseguradoraResponse(
+                id=aseguradora.id,
+                nombre=aseguradora.nombre,
+                identificador_fiscal=aseguradora.identificador_fiscal,
+                telefono=aseguradora.telefono,
+                direccion=aseguradora.direccion,
+                email=aseguradora.email,
+                pagina_web=aseguradora.pagina_web,
+                esta_activa=aseguradora.esta_activa,
+                observaciones=aseguradora.observaciones,
+                fecha_creacion=aseguradora.fecha_creacion,
+                fecha_actualizacion=aseguradora.fecha_actualizacion,
+            )
+            for aseguradora in aseguradoras
+        ]

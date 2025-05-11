@@ -9,6 +9,7 @@ from src.features.aseguradoras.application.dtos import (
 )
 from src.features.aseguradoras.application.use_cases import (
     ActualizarAseguradoraUseCase,
+    BuscarAseguradorasUseCase,
     CrearAseguradoraUseCase,
     EliminarAseguradoraUseCase,
     ListarAseguradorasUseCase,
@@ -94,4 +95,25 @@ def eliminar_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> 
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Aseguradora con ID {aseguradora_id} no encontrada",
+        )
+
+
+@router.get("/search/", response_model=list[AseguradoraResponse])
+def buscar_aseguradoras(
+    query: str = None, esta_activa: bool = None, db: Session = Depends(get_db)
+) -> list[AseguradoraResponse]:
+    """Busca aseguradoras según criterios específicos.
+    
+    Args:
+        query: Texto para buscar en nombre, identificador fiscal o dirección
+        esta_activa: Filtrar por estado activo/inactivo
+    """
+    try:
+        repository = SQLAlchemyAseguradoraRepository(db)
+        use_case = BuscarAseguradorasUseCase(repository)
+        return use_case.execute(query=query, esta_activa=esta_activa)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al buscar aseguradoras: {str(e)}",
         )

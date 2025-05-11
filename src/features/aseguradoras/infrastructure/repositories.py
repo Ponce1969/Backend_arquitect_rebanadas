@@ -1,7 +1,7 @@
 
 from sqlalchemy.orm import Session
 
-from ..application.interfaces import AbstractAseguradoraRepository
+from ..application.interfaces.repositories import AbstractAseguradoraRepository
 from ..domain.entities import Aseguradora as AseguradoraDomain
 from .models import Aseguradora as AseguradoraModel
 
@@ -97,3 +97,26 @@ class SQLAlchemyAseguradoraRepository(AbstractAseguradoraRepository):
             AseguradoraModel.identificador_fiscal == identificador_fiscal
         ).first()
         return self._map_to_domain(db_aseguradora) if db_aseguradora else None
+        
+    def search(self, query: str = None, esta_activa: bool = None) -> list[AseguradoraDomain]:
+        """Busca aseguradoras según criterios específicos."""
+        filters = []
+        
+        if query:
+            # Búsqueda por nombre, identificador fiscal o dirección
+            filters.append(
+                AseguradoraModel.nombre.ilike(f"%{query}%") |
+                AseguradoraModel.identificador_fiscal.ilike(f"%{query}%") |
+                AseguradoraModel.direccion.ilike(f"%{query}%")
+            )
+        
+        if esta_activa is not None:
+            filters.append(AseguradoraModel.esta_activa == esta_activa)
+        
+        db_aseguradoras = self.session.query(AseguradoraModel)
+        
+        if filters:
+            for filter_condition in filters:
+                db_aseguradoras = db_aseguradoras.filter(filter_condition)
+        
+        return [self._map_to_domain(db_aseguradora) for db_aseguradora in db_aseguradoras.all()]
