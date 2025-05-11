@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
 class SustitucionCorredorBase(BaseModel):
@@ -26,8 +26,7 @@ class SustitucionCorredorBase(BaseModel):
             raise ValueError('El corredor sustituto debe ser diferente al corredor ausente')
         return v
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SustitucionCorredorCreate(SustitucionCorredorBase):
@@ -50,8 +49,7 @@ class SustitucionCorredorUpdate(BaseModel):
             raise ValueError('La fecha de fin debe ser posterior a la fecha de inicio')
         return v
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SustitucionCorredorInDB(SustitucionCorredorBase):

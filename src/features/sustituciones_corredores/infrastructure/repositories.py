@@ -1,5 +1,5 @@
-from datetime import date, datetime
-from typing import List, Optional
+from datetime import date
+from typing import Optional
 
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -23,28 +23,28 @@ class SQLAlchemySustitucionCorredorRepository(AbstractSustitucionCorredorReposit
         self.session.refresh(db_sustitucion)
         return db_sustitucion.to_entity()
 
-    def get_by_id(self, sustitucion_id: int) -> Optional[SustitucionCorredorDomain]:
+    def get_by_id(self, sustitucion_id: int) -> SustitucionCorredorDomain | None:
         """Obtiene una sustitución por su ID técnico."""
         db_sustitucion = self.session.query(SustitucionCorredorModel).filter(
             SustitucionCorredorModel.id == sustitucion_id
         ).first()
         return db_sustitucion.to_entity() if db_sustitucion else None
 
-    def get_by_corredor_ausente(self, corredor_numero: int) -> List[SustitucionCorredorDomain]:
+    def get_by_corredor_ausente(self, corredor_numero: int) -> list[SustitucionCorredorDomain]:
         """Obtiene todas las sustituciones donde el corredor especificado está ausente."""
         db_sustituciones = self.session.query(SustitucionCorredorModel).filter(
             SustitucionCorredorModel.corredor_ausente_numero == corredor_numero
         ).all()
         return [db_sustitucion.to_entity() for db_sustitucion in db_sustituciones]
 
-    def get_by_corredor_sustituto(self, corredor_numero: int) -> List[SustitucionCorredorDomain]:
+    def get_by_corredor_sustituto(self, corredor_numero: int) -> list[SustitucionCorredorDomain]:
         """Obtiene todas las sustituciones donde el corredor especificado es sustituto."""
         db_sustituciones = self.session.query(SustitucionCorredorModel).filter(
             SustitucionCorredorModel.corredor_sustituto_numero == corredor_numero
         ).all()
         return [db_sustitucion.to_entity() for db_sustitucion in db_sustituciones]
 
-    def get_activas_by_corredor_ausente(self, corredor_numero: int, fecha_actual: date = None) -> List[SustitucionCorredorDomain]:
+    def get_activas_by_corredor_ausente(self, corredor_numero: int, fecha_actual: date | None = None) -> list[SustitucionCorredorDomain]:
         """Obtiene las sustituciones activas donde el corredor especificado está ausente."""
         if fecha_actual is None:
             fecha_actual = date.today()
@@ -55,14 +55,14 @@ class SQLAlchemySustitucionCorredorRepository(AbstractSustitucionCorredorReposit
                 SustitucionCorredorModel.estado == "activa",
                 SustitucionCorredorModel.fecha_inicio <= fecha_actual,
                 or_(
-                    SustitucionCorredorModel.fecha_fin == None,
+                    SustitucionCorredorModel.fecha_fin is None,
                     SustitucionCorredorModel.fecha_fin >= fecha_actual
                 )
             )
         ).all()
         return [db_sustitucion.to_entity() for db_sustitucion in db_sustituciones]
 
-    def get_activas_by_corredor_sustituto(self, corredor_numero: int, fecha_actual: date = None) -> List[SustitucionCorredorDomain]:
+    def get_activas_by_corredor_sustituto(self, corredor_numero: int, fecha_actual: date | None = None) -> list[SustitucionCorredorDomain]:
         """Obtiene las sustituciones activas donde el corredor especificado es sustituto."""
         if fecha_actual is None:
             fecha_actual = date.today()
@@ -73,19 +73,19 @@ class SQLAlchemySustitucionCorredorRepository(AbstractSustitucionCorredorReposit
                 SustitucionCorredorModel.estado == "activa",
                 SustitucionCorredorModel.fecha_inicio <= fecha_actual,
                 or_(
-                    SustitucionCorredorModel.fecha_fin == None,
+                    SustitucionCorredorModel.fecha_fin is None,
                     SustitucionCorredorModel.fecha_fin >= fecha_actual
                 )
             )
         ).all()
         return [db_sustitucion.to_entity() for db_sustitucion in db_sustituciones]
 
-    def get_all(self) -> List[SustitucionCorredorDomain]:
+    def get_all(self) -> list[SustitucionCorredorDomain]:
         """Obtiene todas las sustituciones de corredores."""
         db_sustituciones = self.session.query(SustitucionCorredorModel).all()
         return [db_sustitucion.to_entity() for db_sustitucion in db_sustituciones]
 
-    def get_activas(self, fecha_actual: date = None) -> List[SustitucionCorredorDomain]:
+    def get_activas(self, fecha_actual: date | None = None) -> list[SustitucionCorredorDomain]:
         """Obtiene todas las sustituciones activas en la fecha actual."""
         if fecha_actual is None:
             fecha_actual = date.today()
@@ -95,7 +95,7 @@ class SQLAlchemySustitucionCorredorRepository(AbstractSustitucionCorredorReposit
                 SustitucionCorredorModel.estado == "activa",
                 SustitucionCorredorModel.fecha_inicio <= fecha_actual,
                 or_(
-                    SustitucionCorredorModel.fecha_fin == None,
+                    SustitucionCorredorModel.fecha_fin is None,
                     SustitucionCorredorModel.fecha_fin >= fecha_actual
                 )
             )
@@ -141,7 +141,7 @@ class SQLAlchemySustitucionCorredorRepository(AbstractSustitucionCorredorReposit
         self.session.delete(db_sustitucion)
         self.session.commit()
 
-    def finalizar(self, sustitucion_id: int, fecha_fin: date = None) -> SustitucionCorredorDomain:
+    def finalizar(self, sustitucion_id: int, fecha_fin: date | None = None) -> SustitucionCorredorDomain:
         """Finaliza una sustitución estableciendo su fecha de fin y cambiando su estado a inactiva."""
         if fecha_fin is None:
             fecha_fin = date.today()
