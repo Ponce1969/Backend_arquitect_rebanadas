@@ -1,9 +1,9 @@
 import os
 import sys
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+
 
 # Agregar el directorio src al path de Python
 sys.path.append(os.path.abspath('src'))
@@ -14,6 +14,8 @@ from src.infrastructure.database import Base, engine, get_db
 # Importar routers
 from src.features.aseguradoras.infrastructure.api.v1.aseguradoras_router import router as aseguradoras_router
 from src.features.clientes.infrastructure.api.v1.clientes_router import router as clientes_router
+from src.features.corredores.infrastructure.api.v1.corredores_router import router as corredores_router
+from src.features.sustituciones_corredores.infrastructure.api.v1.sustituciones_router import router as sustituciones_corredores_router
 from src.features.usuarios.infrastructure.api.v1.usuarios_router import router as usuarios_router
 from src.features.polizas.infrastructure.api.v1.polizas_router import router as polizas_router
 from src.features.tipos_seguros.infrastructure.api.v1.tipos_seguro_router import router as tipos_seguro_router
@@ -44,6 +46,8 @@ if settings.BACKEND_CORS_ORIGINS:
 # Incluir routers
 app.include_router(aseguradoras_router, prefix=settings.API_V1_STR)
 app.include_router(clientes_router, prefix=settings.API_V1_STR)
+app.include_router(corredores_router, prefix=settings.API_V1_STR)
+app.include_router(sustituciones_corredores_router, prefix=settings.API_V1_STR)
 app.include_router(usuarios_router, prefix=settings.API_V1_STR)
 app.include_router(polizas_router, prefix=settings.API_V1_STR)
 app.include_router(tipos_seguro_router, prefix=settings.API_V1_STR)

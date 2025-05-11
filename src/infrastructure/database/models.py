@@ -65,11 +65,11 @@ class TipoDocumento(Base):
     __tablename__ = "tipos_documento"
     
     id = Column(Integer, primary_key=True, index=True)
-    codigo = Column(String(10), nullable=False, unique=True)  # Cu00f3digo u00fanico (ej: DNI, RUT)
+    codigo = Column(String(10), nullable=False, unique=True)  # Codigo único (ej: DNI, RUT)
     nombre = Column(String(50), nullable=False)  # Nombre completo
-    descripcion = Column(String(200))  # Descripciu00f3n adicional
+    descripcion = Column(String(200))  # Descripción adicional
     es_default = Column(Boolean, default=False)  # Indica si es el tipo por defecto
-    esta_activo = Column(Boolean, default=True)  # Indica si estu00e1 activo
+    esta_activo = Column(Boolean, default=True)  # Indica si está activo
     
     # Relaciones
     clientes = relationship("Cliente", back_populates="tipo_documento_rel", lazy="selectin")
