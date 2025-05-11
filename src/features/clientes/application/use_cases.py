@@ -199,33 +199,48 @@ class BuscarClientesUseCase:
         self.repository = repository
 
     def execute(self, search_params: ClienteSearchParams) -> list[ClienteResponse]:
-        # Por ahora solo implementamos búsqueda por texto
-        if search_params.query:
-            clientes = self.repository.search(search_params.query)
-            return [
-                ClienteResponse(
-                    id=cliente.id,
-                    numero_cliente=cliente.numero_cliente,
-                    nombres=cliente.nombres,
-                    apellidos=cliente.apellidos,
-                    tipo_documento_id=cliente.tipo_documento_id,
-                    numero_documento=cliente.numero_documento,
-                    fecha_nacimiento=cliente.fecha_nacimiento,
-                    direccion=cliente.direccion,
-                    localidad=cliente.localidad,
-                    telefonos=cliente.telefonos,
-                    movil=cliente.movil,
-                    mail=cliente.mail,
-                    observaciones=cliente.observaciones,
-                    creado_por_id=cliente.creado_por_id,
-                    modificado_por_id=cliente.modificado_por_id,
-                    fecha_creacion=cliente.fecha_creacion,
-                    fecha_modificacion=cliente.fecha_modificacion,
-                )
-                for cliente in clientes
-            ]
-        # Si no hay parámetros de búsqueda, devolvemos todos los clientes
-        return self.execute()
+        """Ejecuta la búsqueda de clientes según los parámetros especificados.
+        
+        Args:
+            search_params: Parámetros de búsqueda (query, tipo_documento_id, localidad)
+            
+        Returns:
+            Lista de clientes que coinciden con los criterios de búsqueda
+        """
+        # Realizar la búsqueda con todos los parámetros disponibles
+        clientes = self.repository.search(
+            query=search_params.query,
+            tipo_documento_id=search_params.tipo_documento_id,
+            localidad=search_params.localidad
+        )
+        
+        # Si no hay resultados, devolver lista vacía
+        if not clientes:
+            return []
+            
+        # Convertir entidades de dominio a DTOs de respuesta
+        return [
+            ClienteResponse(
+                id=cliente.id,
+                numero_cliente=cliente.numero_cliente,
+                nombres=cliente.nombres,
+                apellidos=cliente.apellidos,
+                tipo_documento_id=cliente.tipo_documento_id,
+                numero_documento=cliente.numero_documento,
+                fecha_nacimiento=cliente.fecha_nacimiento,
+                direccion=cliente.direccion,
+                localidad=cliente.localidad,
+                telefonos=cliente.telefonos,
+                movil=cliente.movil,
+                mail=cliente.mail,
+                observaciones=cliente.observaciones,
+                creado_por_id=cliente.creado_por_id,
+                modificado_por_id=cliente.modificado_por_id,
+                fecha_creacion=cliente.fecha_creacion,
+                fecha_modificacion=cliente.fecha_modificacion,
+            )
+            for cliente in clientes
+        ]
 
 
 class ActualizarClienteUseCase:

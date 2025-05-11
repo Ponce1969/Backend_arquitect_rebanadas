@@ -84,9 +84,48 @@ def obtener_cliente_por_documento(
     if not cliente:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cliente con documento {numero_documento} no encontrado",
+            detail=f"Cliente con número de documento {numero_documento} no encontrado",
         )
     return cliente
+
+
+@router.get("/documento/tipo/{tipo_documento_id}/numero/{numero_documento}", response_model=ClienteResponse)
+def obtener_cliente_por_tipo_y_numero_documento(
+    tipo_documento_id: int, numero_documento: str, db: Session = Depends(get_db)
+) -> ClienteResponse:
+    """Obtiene un cliente por su tipo y número de documento."""
+    try:
+        repository = SQLAlchemyClienteRepository(db)
+        cliente = repository.get_by_documento(tipo_documento_id, numero_documento)
+        if not cliente:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Cliente con tipo de documento {tipo_documento_id} y número {numero_documento} no encontrado",
+            )
+        return ClienteResponse(
+            id=cliente.id,
+            numero_cliente=cliente.numero_cliente,
+            nombres=cliente.nombres,
+            apellidos=cliente.apellidos,
+            tipo_documento_id=cliente.tipo_documento_id,
+            numero_documento=cliente.numero_documento,
+            fecha_nacimiento=cliente.fecha_nacimiento,
+            direccion=cliente.direccion,
+            localidad=cliente.localidad,
+            telefonos=cliente.telefonos,
+            movil=cliente.movil,
+            mail=cliente.mail,
+            observaciones=cliente.observaciones,
+            creado_por_id=cliente.creado_por_id,
+            modificado_por_id=cliente.modificado_por_id,
+            fecha_creacion=cliente.fecha_creacion,
+            fecha_modificacion=cliente.fecha_modificacion,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al buscar cliente: {str(e)}",
+        )
 
 
 @router.get("/", response_model=list[ClienteResponse])
@@ -95,17 +134,50 @@ def listar_clientes(
     db: Session = Depends(get_db)
 ) -> list[ClienteResponse]:
     """Lista todos los clientes o busca por término."""
-    repository = SQLAlchemyClienteRepository(db)
-    
-    if query:
-        # Si hay un término de búsqueda, usamos el caso de uso de búsqueda
-        use_case = BuscarClientesUseCase(repository)
-        search_params = ClienteSearchParams(query=query)
-        return use_case.execute(search_params)
-    else:
-        # Si no hay término de búsqueda, listamos todos los clientes
+    try:
+        repository = SQLAlchemyClienteRepository(db)
+        
+        # Si hay un término de búsqueda, usar el caso de uso de búsqueda
+        if query:
+            search_params = ClienteSearchParams(query=query)
+            use_case = BuscarClientesUseCase(repository)
+            return use_case.execute(search_params)
+        
+        # Si no hay término de búsqueda, listar todos los clientes
         use_case = ListarClientesUseCase(repository)
         return use_case.execute()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al listar clientes: {str(e)}",
+        )
+
+
+@router.get("/search/", response_model=list[ClienteResponse])
+def buscar_clientes(
+    query: str | None = Query(None, description="Término de búsqueda en nombres, apellidos, documento o email"),
+    tipo_documento_id: int | None = Query(None, description="ID del tipo de documento"),
+    localidad: str | None = Query(None, description="Localidad del cliente"),
+    db: Session = Depends(get_db)
+) -> list[ClienteResponse]:
+    """Busca clientes según criterios específicos.
+    
+    Permite realizar búsquedas avanzadas combinando diferentes criterios.
+    """
+    try:
+        repository = SQLAlchemyClienteRepository(db)
+        search_params = ClienteSearchParams(
+            query=query,
+            tipo_documento_id=tipo_documento_id,
+            localidad=localidad
+        )
+        use_case = BuscarClientesUseCase(repository)
+        return use_case.execute(search_params)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al buscar clientes: {str(e)}",
+        )
 
 
 @router.put("/{cliente_id}", response_model=ClienteResponse)

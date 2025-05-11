@@ -81,6 +81,14 @@ class SQLAlchemyClienteRepository(AbstractClienteRepository):
             ClienteModel.numero_documento == numero_documento
         ).first()
         return self._map_to_domain(db_cliente) if db_cliente else None
+        
+    def get_by_documento(self, tipo_documento_id: int, numero_documento: str) -> ClienteDomain | None:
+        """Obtiene un cliente por su tipo y número de documento."""
+        db_cliente = self.session.query(ClienteModel).filter(
+            ClienteModel.tipo_documento_id == tipo_documento_id,
+            ClienteModel.numero_documento == numero_documento
+        ).first()
+        return self._map_to_domain(db_cliente) if db_cliente else None
 
     def get_by_email(self, email: str) -> ClienteDomain | None:
         db_cliente = self.session.query(ClienteModel).filter(
@@ -125,14 +133,36 @@ class SQLAlchemyClienteRepository(AbstractClienteRepository):
             return True
         return False
 
-    def search(self, query: str) -> list[ClienteDomain]:
-        # Búsqueda por nombres, apellidos o número de documento
-        search_pattern = f"%{query}%"
-        db_clientes = self.session.query(ClienteModel).filter(
-            or_(
-                ClienteModel.nombres.ilike(search_pattern),
-                ClienteModel.apellidos.ilike(search_pattern),
-                ClienteModel.numero_documento.ilike(search_pattern)
+    def search(self, query: str = None, tipo_documento_id: int = None, localidad: str = None) -> list[ClienteDomain]:
+        """Busca clientes según criterios específicos.
+        
+        Args:
+            query: Texto para buscar en nombres, apellidos o número de documento
+            tipo_documento_id: Filtrar por tipo de documento
+            localidad: Filtrar por localidad
+        """
+        # Construir la consulta base
+        db_query = self.session.query(ClienteModel)
+        
+        # Aplicar filtros si se proporcionan
+        if query:
+            search_pattern = f"%{query}%"
+            db_query = db_query.filter(
+                or_(
+                    ClienteModel.nombres.ilike(search_pattern),
+                    ClienteModel.apellidos.ilike(search_pattern),
+                    ClienteModel.numero_documento.ilike(search_pattern),
+                    ClienteModel.mail.ilike(search_pattern)
+                )
             )
-        ).all()
+        
+        if tipo_documento_id is not None:
+            db_query = db_query.filter(ClienteModel.tipo_documento_id == tipo_documento_id)
+        
+        if localidad:
+            localidad_pattern = f"%{localidad}%"
+            db_query = db_query.filter(ClienteModel.localidad.ilike(localidad_pattern))
+        
+        # Ejecutar la consulta y mapear los resultados
+        db_clientes = db_query.all()
         return [self._map_to_domain(db_cliente) for db_cliente in db_clientes]
