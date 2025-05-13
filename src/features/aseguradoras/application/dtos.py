@@ -15,7 +15,7 @@ class AseguradoraBase(BaseModel):
     observaciones: str | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class AseguradoraCreate(AseguradoraBase):
@@ -35,7 +35,7 @@ class AseguradoraUpdate(BaseModel):
     observaciones: str | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class AseguradoraInDB(AseguradoraBase):

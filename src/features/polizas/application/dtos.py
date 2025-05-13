@@ -2,7 +2,7 @@ from datetime import date
 from typing import Optional, List
 import uuid
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 # Importamos el Enum TipoDuracion del dominio
 from src.features.polizas.domain.types import TipoDuracion
@@ -14,7 +14,7 @@ from src.features.tipos_seguros.application.dtos import TipoSeguroDto
 # from src.domain.shared.dtos import MonedaDto  # Asumimos que existe
 
 
-# DTO para crear una nueva pu00f3liza (entrada a EmitirPolizaUseCase)
+# DTO para crear una nueva poliza (entrada a EmitirPolizaUseCase)
 class EmitirPolizaCommand(BaseModel):
     cliente_id: uuid.UUID
     corredor_id: Optional[int] = None
@@ -37,22 +37,24 @@ class EmitirPolizaCommand(BaseModel):
     tipo_duracion: TipoDuracion = TipoDuracion.anual
     
     # Validadores
-    @validator("fecha_vencimiento")
+    @field_validator("fecha_vencimiento")
+    @classmethod
     def fecha_vencimiento_posterior_a_inicio(cls, v, values):
         if "fecha_inicio" in values and v <= values["fecha_inicio"]:
             raise ValueError("La fecha de vencimiento debe ser posterior a la fecha de inicio")
         return v
     
-    @validator("comision")
+    @field_validator("comision")
+    @classmethod
     def comision_positiva(cls, v):
         if v is not None and v < 0:
-            raise ValueError("La comisiu00f3n no puede ser negativa")
+            raise ValueError("La comisión no puede ser negativa")
         return v
 
 
-# DTO para actualizar una pu00f3liza existente (entrada a ActualizarPolizaUseCase)
+# DTO para actualizar una poliza existente (entrada a ActualizarPolizaUseCase)
 class ActualizarPolizaCommand(BaseModel):
-    id: int  # ID de la pu00f3liza a actualizar
+    id: int  # ID de la poliza a actualizar
     corredor_id: Optional[int] = None
     carpeta: Optional[str] = None
     endoso: Optional[str] = None
@@ -70,14 +72,15 @@ class ActualizarPolizaCommand(BaseModel):
     tipo_duracion: Optional[TipoDuracion] = None
     
     # Validadores
-    @validator("comision")
+    @field_validator("comision")
+    @classmethod
     def comision_positiva(cls, v):
         if v is not None and v < 0:
-            raise ValueError("La comisiu00f3n no puede ser negativa")
+            raise ValueError("La comisión no puede ser negativa")
         return v
 
 
-# DTO para representar una Pu00f3liza (salida de Use Cases y API)
+# DTO para representar una poliza (salida de Use Cases y API)
 class PolizaDto(BaseModel):
     id: int
     cliente: ClienteDto  # DTO completo del cliente
@@ -120,7 +123,7 @@ class PolizaDto(BaseModel):
         }
 
 
-# DTO para representar un resumen de Pu00f3liza (para listados)
+# DTO para representar un resumen de poliza (para listados)
 class PolizaSummaryDto(BaseModel):
     id: int
     cliente_id: uuid.UUID

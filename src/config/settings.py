@@ -1,7 +1,7 @@
 import os
 from typing import Any
 
-from pydantic import PostgresDsn, validator
+from pydantic import PostgresDsn, field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -44,17 +44,19 @@ class Settings(BaseSettings):
     # Configuración del frontend
     FRONTEND_URL: str = "http://localhost:5173"
     
-    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: str | None, values: dict) -> Any:
+    @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
+    @classmethod
+    def assemble_db_connection(cls, v: str | None, info) -> Any:
         if isinstance(v, str):
             return v
             
-        # En Pydantic v2, la forma de construir URLs ha cambiado
-        user = values.get("POSTGRES_USER")
-        password = values.get("POSTGRES_PASSWORD")
-        host = values.get("POSTGRES_SERVER")
-        port = values.get("POSTGRES_PORT")
-        db = values.get("POSTGRES_DB", "")
+        # En Pydantic v2, accedemos a los datos a través del objeto ValidationInfo
+        data = info.data
+        user = data.get("POSTGRES_USER")
+        password = data.get("POSTGRES_PASSWORD")
+        host = data.get("POSTGRES_SERVER")
+        port = data.get("POSTGRES_PORT")
+        db = data.get("POSTGRES_DB", "")
         
         # Construir manualmente la URL de conexión
         return f"postgresql://{user}:{password}@{host}:{port}/{db}"

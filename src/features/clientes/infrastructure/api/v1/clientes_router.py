@@ -19,6 +19,14 @@ from src.features.clientes.application.use_cases import (
     ObtenerClientePorNumeroUseCase,
     ObtenerClienteUseCase,
 )
+from src.features.clientes.domain.exceptions import (
+    ClienteException,
+    ClienteNotFoundException,
+    ClienteNumeroNotFoundException,
+    ClienteDocumentoNotFoundException,
+    ClienteDocumentoExistsException,
+    ClienteEmailExistsException,
+)
 from src.features.clientes.infrastructure.repositories import SQLAlchemyClienteRepository
 from src.infrastructure.database import get_db
 
@@ -34,7 +42,11 @@ def crear_cliente(
         repository = SQLAlchemyClienteRepository(db)
         use_case = CrearClienteUseCase(repository)
         return use_case.execute(cliente)
-    except ValueError as e:
+    except ClienteDocumentoExistsException as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except ClienteEmailExistsException as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except ClienteException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
@@ -46,15 +58,20 @@ def crear_cliente(
 @router.get("/{cliente_id}", response_model=ClienteResponse)
 def obtener_cliente(cliente_id: UUID, db: Session = Depends(get_db)) -> ClienteResponse:
     """Obtiene un cliente por su ID."""
-    repository = SQLAlchemyClienteRepository(db)
-    use_case = ObtenerClienteUseCase(repository)
-    cliente = use_case.execute(cliente_id)
-    if not cliente:
+    try:
+        repository = SQLAlchemyClienteRepository(db)
+        use_case = ObtenerClienteUseCase(repository)
+        return use_case.execute(cliente_id)
+    except ClienteNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cliente con ID {cliente_id} no encontrado",
+            detail=str(e),
         )
-    return cliente
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al obtener cliente: {str(e)}",
+        )
 
 
 @router.get("/numero/{numero_cliente}", response_model=ClienteResponse)
@@ -62,15 +79,20 @@ def obtener_cliente_por_numero(
     numero_cliente: int, db: Session = Depends(get_db)
 ) -> ClienteResponse:
     """Obtiene un cliente por su número de cliente."""
-    repository = SQLAlchemyClienteRepository(db)
-    use_case = ObtenerClientePorNumeroUseCase(repository)
-    cliente = use_case.execute(numero_cliente)
-    if not cliente:
+    try:
+        repository = SQLAlchemyClienteRepository(db)
+        use_case = ObtenerClientePorNumeroUseCase(repository)
+        return use_case.execute(numero_cliente)
+    except ClienteNumeroNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cliente con número {numero_cliente} no encontrado",
+            detail=str(e),
         )
-    return cliente
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al obtener cliente por número: {str(e)}",
+        )
 
 
 @router.get("/documento/{numero_documento}", response_model=ClienteResponse)
@@ -78,15 +100,20 @@ def obtener_cliente_por_documento(
     numero_documento: str, db: Session = Depends(get_db)
 ) -> ClienteResponse:
     """Obtiene un cliente por su número de documento."""
-    repository = SQLAlchemyClienteRepository(db)
-    use_case = ObtenerClientePorDocumentoUseCase(repository)
-    cliente = use_case.execute(numero_documento)
-    if not cliente:
+    try:
+        repository = SQLAlchemyClienteRepository(db)
+        use_case = ObtenerClientePorDocumentoUseCase(repository)
+        return use_case.execute(numero_documento)
+    except ClienteDocumentoNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cliente con número de documento {numero_documento} no encontrado",
+            detail=str(e),
         )
-    return cliente
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al obtener cliente por documento: {str(e)}",
+        )
 
 
 @router.get("/documento/tipo/{tipo_documento_id}/numero/{numero_documento}", response_model=ClienteResponse)
@@ -188,14 +215,17 @@ def actualizar_cliente(
     try:
         repository = SQLAlchemyClienteRepository(db)
         use_case = ActualizarClienteUseCase(repository)
-        updated_cliente = use_case.execute(cliente_id, cliente)
-        if not updated_cliente:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Cliente con ID {cliente_id} no encontrado",
-            )
-        return updated_cliente
-    except ValueError as e:
+        return use_case.execute(cliente_id, cliente)
+    except ClienteNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except ClienteDocumentoExistsException as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except ClienteEmailExistsException as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except ClienteException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
@@ -207,11 +237,17 @@ def actualizar_cliente(
 @router.delete("/{cliente_id}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_cliente(cliente_id: UUID, db: Session = Depends(get_db)) -> None:
     """Elimina un cliente."""
-    repository = SQLAlchemyClienteRepository(db)
-    use_case = EliminarClienteUseCase(repository)
-    deleted = use_case.execute(cliente_id)
-    if not deleted:
+    try:
+        repository = SQLAlchemyClienteRepository(db)
+        use_case = EliminarClienteUseCase(repository)
+        use_case.execute(cliente_id)
+    except ClienteNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cliente con ID {cliente_id} no encontrado",
+            detail=str(e),
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al eliminar cliente: {str(e)}",
         )

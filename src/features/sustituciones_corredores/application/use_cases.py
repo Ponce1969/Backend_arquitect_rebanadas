@@ -9,25 +9,40 @@ from .dtos import (
 )
 from .interfaces.repositories import AbstractSustitucionCorredorRepository
 from ..domain.entities import SustitucionCorredor as SustitucionCorredorDomain
+from ..domain.exceptions import (
+    SustitucionCorredorNotFoundException,
+    SustitucionCorredorSolapamientoException,
+    CorredorAusenteNotFoundException,
+    CorredorSustitutoNotFoundException
+)
 
 
 class CrearSustitucionCorredorUseCase:
-    """Caso de uso para crear una nueva sustituciu00f3n de corredor."""
+    """Caso de uso para crear una nueva sustitución de corredor."""
 
     def __init__(self, repository: AbstractSustitucionCorredorRepository):
         self.repository = repository
 
     def execute(self, sustitucion_data: SustitucionCorredorCreate) -> SustitucionCorredorResponse:
         # Verificar que el corredor ausente y el sustituto existan
-        # Esta validaciu00f3n deberu00eda hacerse en un servicio real, aquu00ed asumimos que los nu00fameros son vu00e1lidos
+        # En un caso real, aquí verificaríamos que los corredores existan en la base de datos
+        # Si no existen, lanzaríamos las excepciones correspondientes:
+        # if not corredor_ausente_exists:
+        #    raise CorredorAusenteNotFoundException(sustitucion_data.corredor_ausente_numero)
+        # if not corredor_sustituto_exists:
+        #    raise CorredorSustitutoNotFoundException(sustitucion_data.corredor_sustituto_numero)
         
-        # Verificar que no haya otra sustituciu00f3n activa para el mismo corredor ausente
+        # Verificar que no haya otra sustitución activa para el mismo corredor ausente
         sustituciones_activas = self.repository.get_activas_by_corredor_ausente(
             sustitucion_data.corredor_ausente_numero
         )
         
         if sustituciones_activas:
-            raise ValueError(f"Ya existe una sustituciu00f3n activa para el corredor {sustitucion_data.corredor_ausente_numero}")
+            raise SustitucionCorredorSolapamientoException(
+                sustitucion_data.corredor_ausente_numero,
+                sustitucion_data.fecha_inicio.isoformat(),
+                sustitucion_data.fecha_fin.isoformat() if sustitucion_data.fecha_fin else "indefinida"
+            )
         
         # Crear la entidad de dominio
         sustitucion = SustitucionCorredorDomain(
@@ -40,7 +55,7 @@ class CrearSustitucionCorredorUseCase:
             observaciones=sustitucion_data.observaciones
         )
         
-        # Guardar la sustituciu00f3n en el repositorio
+        # Guardar la sustitución en el repositorio
         new_sustitucion = self.repository.add(sustitucion)
         
         # Convertir la entidad de dominio a DTO de respuesta
@@ -59,7 +74,7 @@ class CrearSustitucionCorredorUseCase:
 
 
 class ObtenerSustitucionCorredorPorIdUseCase:
-    """Caso de uso para obtener una sustituciu00f3n de corredor por su ID."""
+    """Caso de uso para obtener una sustitución de corredor por su ID."""
 
     def __init__(self, repository: AbstractSustitucionCorredorRepository):
         self.repository = repository
@@ -134,7 +149,7 @@ class ListarSustitucionesActivasUseCase:
 
 
 class ObtenerSustitucionesPorCorredorAusenteUseCase:
-    """Caso de uso para obtener las sustituciones donde un corredor estu00e1 ausente."""
+    """Caso de uso para obtener las sustituciones donde un corredor está ausente."""
 
     def __init__(self, repository: AbstractSustitucionCorredorRepository):
         self.repository = repository
@@ -184,7 +199,7 @@ class ObtenerSustitucionesPorCorredorSustitutoUseCase:
 
 
 class ObtenerSustitucionesActivasPorCorredorAusenteUseCase:
-    """Caso de uso para obtener las sustituciones activas donde un corredor estu00e1 ausente."""
+    """Caso de uso para obtener las sustituciones activas donde un corredor está ausente."""
 
     def __init__(self, repository: AbstractSustitucionCorredorRepository):
         self.repository = repository
@@ -234,18 +249,18 @@ class ObtenerSustitucionesActivasPorCorredorSustitutoUseCase:
 
 
 class ActualizarSustitucionCorredorUseCase:
-    """Caso de uso para actualizar una sustituciu00f3n de corredor existente."""
+    """Caso de uso para actualizar una sustitución de corredor existente."""
 
     def __init__(self, repository: AbstractSustitucionCorredorRepository):
         self.repository = repository
 
-    def execute(self, sustitucion_id: int, sustitucion_data: SustitucionCorredorUpdate) -> Optional[SustitucionCorredorResponse]:
-        # Verificar si la sustituciu00f3n existe
+    def execute(self, sustitucion_id: int, sustitucion_data: SustitucionCorredorUpdate) -> SustitucionCorredorResponse:
+        # Verificar si la sustitución existe
         sustitucion = self.repository.get_by_id(sustitucion_id)
         if not sustitucion:
-            return None
+            raise SustitucionCorredorNotFoundException(sustitucion_id)
         
-        # Actualizar los campos de la sustituciu00f3n
+        # Actualizar los campos de la sustitución
         if sustitucion_data.corredor_sustituto_numero is not None:
             sustitucion.corredor_sustituto_numero = sustitucion_data.corredor_sustituto_numero
         
@@ -283,31 +298,31 @@ class ActualizarSustitucionCorredorUseCase:
 
 
 class EliminarSustitucionCorredorUseCase:
-    """Caso de uso para eliminar una sustituciu00f3n de corredor."""
+    """Caso de uso para eliminar una sustitución de corredor."""
 
     def __init__(self, repository: AbstractSustitucionCorredorRepository):
         self.repository = repository
 
-    def execute(self, sustitucion_id: int) -> bool:
-        try:
-            self.repository.delete(sustitucion_id)
-            return True
-        except ValueError:
-            return False
+    def execute(self, sustitucion_id: int) -> None:
+        sustitucion = self.repository.get_by_id(sustitucion_id)
+        if not sustitucion:
+            raise SustitucionCorredorNotFoundException(sustitucion_id)
+        
+        self.repository.delete(sustitucion_id)
 
 
 class FinalizarSustitucionCorredorUseCase:
-    """Caso de uso para finalizar una sustituciu00f3n de corredor."""
+    """Caso de uso para finalizar una sustitución de corredor."""
 
     def __init__(self, repository: AbstractSustitucionCorredorRepository):
         self.repository = repository
 
     def execute(self, sustitucion_id: int, request: FinalizarSustitucionRequest) -> Optional[SustitucionCorredorResponse]:
         try:
-            # Finalizar la sustituciu00f3n en el repositorio
+            # Finalizar la sustitución en el repositorio
             sustitucion = self.repository.finalizar(sustitucion_id, request.fecha_fin)
             
-            # Si hay observaciones adicionales, actualizar la sustituciu00f3n
+            # Si hay observaciones adicionales, actualizar la sustitución
             if request.observaciones:
                 sustitucion.observaciones = (sustitucion.observaciones or "") + "\n" + request.observaciones
                 sustitucion = self.repository.update(sustitucion)

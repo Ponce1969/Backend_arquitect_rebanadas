@@ -21,13 +21,13 @@ from src.features.polizas.infrastructure.api.v1.polizas_router import router as 
 from src.features.tipos_seguros.infrastructure.api.v1.tipos_seguro_router import router as tipos_seguro_router
 
 # Importar inicializadores de datos
-from src.infrastructure.database.init_data import init_tipos_documento
+from src.infrastructure.database.init_data import init_tipos_documento, init_usuarios
 from src.features.corredores.infrastructure.init_data import init_corredores
 
 # Crear tablas en la base de datos
 Base.metadata.create_all(bind=engine)
 
-# Inicializar la aplicaciu00f3n FastAPI
+# Inicializar la aplicación FastAPI
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
@@ -61,6 +61,8 @@ async def startup_event():
         init_tipos_documento(db)
         # Inicializar corredores
         init_corredores(db)
+        # Inicializar usuarios
+        init_usuarios(db)
     except Exception as e:
         print(f"Error al inicializar datos: {e}")
     finally:
@@ -72,6 +74,6 @@ async def root():
     return {"message": f"Bienvenido a {settings.PROJECT_NAME}"}
 
 
-# Para ejecutar la aplicaciu00f3n directamente con Python
+# Para ejecutar la aplicación directamente con Python
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

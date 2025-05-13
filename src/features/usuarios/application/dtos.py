@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field, validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 # Importamos el Enum de Roles
 from src.domain.shared.custom_types import Role
@@ -20,7 +20,8 @@ class RegistroUsuarioCommand(BaseModel):
     comision_porcentaje: float | None = 0.0
     telefono: str | None = Field(None, max_length=20)
 
-    @validator('role', 'corredor_numero')
+    @field_validator('role', 'corredor_numero')
+    @classmethod
     def validate_role_corredor(cls, v, values, **kwargs):
         # Si el campo es 'role' y es CORREDOR, verificamos que corredor_numero esté presente
         if kwargs.get('field').name == 'role' and v == Role.CORREDOR:

@@ -9,6 +9,7 @@ from src.config.settings import settings
 from src.features.usuarios.application.dtos import (
     ActualizarUsuarioCommand,
     CambiarContrasenaCommand,
+    LoginCommand,
     RegistroUsuarioCommand,
     TokenDto,
     UsuarioDto,
@@ -32,6 +33,7 @@ from src.infrastructure.security.password import PasswordHelper
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
 # Configuración de seguridad OAuth2
+# La URL debe ser relativa a /api/v1/usuarios, que es el prefijo del router
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/usuarios/login")
 
 

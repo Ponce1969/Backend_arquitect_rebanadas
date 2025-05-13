@@ -10,12 +10,12 @@ class AbstractAseguradoraRepository(abc.ABC):
 
     @abc.abstractmethod
     def add(self, aseguradora: Aseguradora):
-        """Au00f1ade una nueva aseguradora al repositorio."""
+        """Añade una nueva aseguradora al repositorio."""
         raise NotImplementedError
 
     @abc.abstractmethod
     def get_by_id(self, aseguradora_id: int) -> Optional[Aseguradora]:
-        """Obtiene una aseguradora por su ID tu00e9cnico."""
+        """Obtiene una aseguradora por su ID técnico."""
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -40,10 +40,10 @@ class AbstractAseguradoraRepository(abc.ABC):
 
     @abc.abstractmethod
     def delete(self, aseguradora_id: int):
-        """Elimina una aseguradora por su ID tu00e9cnico."""
+        """Elimina una aseguradora por su ID técnico."""
         raise NotImplementedError
 
     @abc.abstractmethod
     def search(self, query: str = None, esta_activa: bool = None) -> List[Aseguradora]:
-        """Busca aseguradoras segu00fan criterios especu00edficos."""
+        """Busca aseguradoras según criterios específicos."""
         raise NotImplementedError

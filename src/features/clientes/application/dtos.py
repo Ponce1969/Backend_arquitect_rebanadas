@@ -19,7 +19,7 @@ class ClienteBase(BaseModel):
     observaciones: str | None = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ClienteCreate(ClienteBase):
@@ -44,7 +44,7 @@ class ClienteUpdate(BaseModel):
     modificado_por_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ClienteInDB(ClienteBase):

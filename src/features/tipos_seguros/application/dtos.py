@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 # Importamos el DTO de Aseguradora para incluirlo en nuestros DTOs
 from src.features.aseguradoras.application.dtos import AseguradoraDto
@@ -20,22 +20,23 @@ class CreateTipoSeguroCommand(BaseModel):
     vigencia_default: int = Field(1, ge=1)  # Mayor o igual a 1
     aseguradora_id: int = Field(...)
     
-    @validator('codigo')
+    @field_validator('codigo')
+    @classmethod
     def codigo_must_be_valid(cls, v):
         if not v.strip():
-            raise ValueError('El cu00f3digo no puede estar vacu00edo')
-        return v.upper()  # Convertir a mayu00fasculas
+            raise ValueError('El código no puede estar vacío')
+        return v.upper()  # Convertir a mayúsculas
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "codigo": "AUTO001",
                 "nombre": "Seguro Automotriz Completo",
-                "descripcion": "Cobertura completa para vehcu00edculos particulares",
+                "descripcion": "Cobertura completa para vehículos particulares",
                 "es_default": True,
                 "esta_activo": True,
                 "categoria": "AUTOMOTRIZ",
-                "cobertura": "Dau00f1os a terceros, robo, incendio y destrucciu00f3n total",
+                "cobertura": "Daños a terceros, robo, incendio y destrucción total",
                 "vigencia_default": 12,
                 "aseguradora_id": 1
             }
@@ -55,23 +56,24 @@ class UpdateTipoSeguroCommand(BaseModel):
     vigencia_default: int = Field(1, ge=1)  # Mayor o igual a 1
     aseguradora_id: int = Field(...)
     
-    @validator('codigo')
+    @field_validator('codigo')
+    @classmethod
     def codigo_must_be_valid(cls, v):
         if not v.strip():
-            raise ValueError('El cu00f3digo no puede estar vacu00edo')
-        return v.upper()  # Convertir a mayu00fasculas
+            raise ValueError('El código no puede estar vacío')
+        return v.upper()  # Convertir a mayúsculas
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "id": 1,
                 "codigo": "AUTO001",
                 "nombre": "Seguro Automotriz Completo Actualizado",
-                "descripcion": "Cobertura completa para vehcu00edculos particulares",
+                "descripcion": "Cobertura completa para vehículos particulares",
                 "es_default": True,
                 "esta_activo": True,
                 "categoria": "AUTOMOTRIZ",
-                "cobertura": "Dau00f1os a terceros, robo, incendio y destrucciu00f3n total",
+                "cobertura": "Daños a terceros, robo, incendio y destrucción total",
                 "vigencia_default": 12,
                 "aseguradora_id": 1
             }
@@ -104,7 +106,7 @@ class TipoSeguroDto(BaseModel):
         return self.vigencia_default
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TipoSeguroSummaryDto(BaseModel):
@@ -119,4 +121,4 @@ class TipoSeguroSummaryDto(BaseModel):
     aseguradora_nombre: str
     
     class Config:
-        orm_mode = True
+        from_attributes = True

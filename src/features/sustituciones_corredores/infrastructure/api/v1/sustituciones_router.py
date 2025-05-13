@@ -3,6 +3,14 @@ from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from src.features.sustituciones_corredores.domain.exceptions import (
+    SustitucionCorredorNotFoundException,
+    SustitucionCorredorSolapamientoException,
+    CorredorAusenteNotFoundException,
+    CorredorSustitutoNotFoundException,
+    SustitucionCorredorFechasInvalidasException
+)
+
 from src.features.sustituciones_corredores.application.dtos import (
     FinalizarSustitucionRequest,
     SustitucionCorredorCreate,
@@ -10,20 +18,21 @@ from src.features.sustituciones_corredores.application.dtos import (
     SustitucionCorredorUpdate
 )
 from src.features.sustituciones_corredores.application.use_cases import (
-    ActualizarSustitucionCorredorUseCase,
     CrearSustitucionCorredorUseCase,
-    EliminarSustitucionCorredorUseCase,
-    FinalizarSustitucionCorredorUseCase,
-    ListarSustitucionesActivasUseCase,
-    ListarSustitucionesCorredorUseCase,
     ObtenerSustitucionCorredorPorIdUseCase,
+    ListarSustitucionesCorredorUseCase,
+    ListarSustitucionesActivasUseCase,
+    ObtenerSustitucionesPorCorredorAusenteUseCase,
+    ObtenerSustitucionesPorCorredorSustitutoUseCase,
     ObtenerSustitucionesActivasPorCorredorAusenteUseCase,
     ObtenerSustitucionesActivasPorCorredorSustitutoUseCase,
-    ObtenerSustitucionesPorCorredorAusenteUseCase,
-    ObtenerSustitucionesPorCorredorSustitutoUseCase
+    ActualizarSustitucionCorredorUseCase,
+    EliminarSustitucionCorredorUseCase,
+    FinalizarSustitucionCorredorUseCase
 )
 from src.features.sustituciones_corredores.infrastructure.repositories import SQLAlchemySustitucionCorredorRepository
 from src.infrastructure.database import get_db
+
 
 # Crear el router para sustituciones de corredores
 router = APIRouter(
@@ -38,13 +47,18 @@ def crear_sustitucion_corredor(
     sustitucion: SustitucionCorredorCreate,
     db: Session = Depends(get_db)
 ) -> SustitucionCorredorResponse:
-    """Crea una nueva sustituciu00f3n de corredor."""
+    """Crea una nueva sustitución de corredor."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
     use_case = CrearSustitucionCorredorUseCase(repository)
     
     try:
         return use_case.execute(sustitucion)
-    except ValueError as e:
+    except SustitucionCorredorSolapamientoException as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e)
+        )
+    except (CorredorAusenteNotFoundException, CorredorSustitutoNotFoundException) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -56,7 +70,7 @@ def obtener_sustitucion_corredor(
     sustitucion_id: int,
     db: Session = Depends(get_db)
 ) -> SustitucionCorredorResponse:
-    """Obtiene una sustituciu00f3n de corredor por su ID."""
+    """Obtiene una sustitución de corredor por su ID."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
     use_case = ObtenerSustitucionCorredorPorIdUseCase(repository)
     
@@ -81,7 +95,7 @@ def listar_sustituciones_corredores(
     return use_case.execute()
 
 
-@router.get("/activas/", response_model=list[SustitucionCorredorResponse])
+@router.get("/activas", response_model=list[SustitucionCorredorResponse])
 def listar_sustituciones_activas(
     fecha: date | None = Query(None, description="Fecha para verificar sustituciones activas (por defecto, fecha actual)"),
     db: Session = Depends(get_db)
@@ -98,7 +112,7 @@ def obtener_sustituciones_por_corredor_ausente(
     corredor_numero: int,
     db: Session = Depends(get_db)
 ) -> list[SustitucionCorredorResponse]:
-    """Obtiene todas las sustituciones donde el corredor especificado estu00e1 ausente."""
+    """Obtiene todas las sustituciones donde el corredor especificado está ausente."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
     use_case = ObtenerSustitucionesPorCorredorAusenteUseCase(repository)
     
@@ -123,7 +137,7 @@ def obtener_sustituciones_activas_por_corredor_ausente(
     fecha: date | None = Query(None, description="Fecha para verificar sustituciones activas (por defecto, fecha actual)"),
     db: Session = Depends(get_db)
 ) -> list[SustitucionCorredorResponse]:
-    """Obtiene las sustituciones activas donde el corredor especificado estu00e1 ausente."""
+    """Obtiene las sustituciones activas donde el corredor especificado está ausente."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
     use_case = ObtenerSustitucionesActivasPorCorredorAusenteUseCase(repository)
     
@@ -149,20 +163,23 @@ def actualizar_sustitucion_corredor(
     sustitucion_data: SustitucionCorredorUpdate,
     db: Session = Depends(get_db)
 ) -> SustitucionCorredorResponse:
-    """Actualiza una sustituciu00f3n de corredor existente."""
+    """Actualiza una sustitución de corredor existente."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
     use_case = ActualizarSustitucionCorredorUseCase(repository)
     
     try:
-        sustitucion = use_case.execute(sustitucion_id, sustitucion_data)
-        if not sustitucion:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Sustituciu00f3n de corredor con ID {sustitucion_id} no encontrada"
-            )
-        
-        return sustitucion
-    except ValueError as e:
+        return use_case.execute(sustitucion_id, sustitucion_data)
+    except SustitucionCorredorNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except SustitucionCorredorSolapamientoException as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e)
+        )
+    except (CorredorAusenteNotFoundException, CorredorSustitutoNotFoundException, SustitucionCorredorFechasInvalidasException) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
@@ -173,16 +190,17 @@ def actualizar_sustitucion_corredor(
 def eliminar_sustitucion_corredor(
     sustitucion_id: int,
     db: Session = Depends(get_db)
-) -> dict[str, str]:
-    """Elimina una sustituciu00f3n de corredor por su ID."""
+) -> None:
+    """Elimina una sustitución de corredor por su ID."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
     use_case = EliminarSustitucionCorredorUseCase(repository)
     
-    result = use_case.execute(sustitucion_id)
-    if not result:
+    try:
+        use_case.execute(sustitucion_id)
+    except SustitucionCorredorNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Sustituciu00f3n de corredor con ID {sustitucion_id} no encontrada"
+            detail=str(e)
         )
 
 
@@ -192,20 +210,18 @@ def finalizar_sustitucion_corredor(
     request: FinalizarSustitucionRequest,
     db: Session = Depends(get_db)
 ) -> SustitucionCorredorResponse:
-    """Finaliza una sustituciu00f3n de corredor estableciendo su fecha de fin y cambiando su estado a inactiva."""
+    """Finaliza una sustitución de corredor estableciendo su fecha de fin y cambiando su estado a inactiva."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
     use_case = FinalizarSustitucionCorredorUseCase(repository)
     
     try:
-        sustitucion = use_case.execute(sustitucion_id, request)
-        if not sustitucion:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Sustituciu00f3n de corredor con ID {sustitucion_id} no encontrada"
-            )
-        
-        return sustitucion
-    except ValueError as e:
+        return use_case.execute(sustitucion_id, request)
+    except SustitucionCorredorNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except SustitucionCorredorFechasInvalidasException as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)

@@ -2,7 +2,7 @@ import enum
 
 
 class TipoDuracion(str, enum.Enum):
-    """Enumeraciu00f3n de Dominio para los tipos de duraciu00f3n de pu00f3lizas."""
+    """Enumeración de Dominio para los tipos de duración de polizas."""
     diaria = "diaria"
     semanal = "semanal"
     mensual = "mensual"

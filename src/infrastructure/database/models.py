@@ -10,9 +10,9 @@ from src.infrastructure.database.base import Base
 from src.domain.shared.entities import Moneda as MonedaEntity, TipoDocumento as TipoDocumentoEntity
 
 
-# Definiu00f3n de la funciu00f3n helper para el tiempo
+# Definición de la función helper para el tiempo
 def get_utc_now():
-    """Funciu00f3n helper para obtener el tiempo UTC actual en UTC."""
+    """Función helper para obtener el tiempo UTC actual en UTC."""
     return datetime.now(timezone.utc)
 
 
@@ -33,7 +33,7 @@ class Moneda(Base):
     # Relaciones
     # movimientos = relationship("MovimientoVigencia", back_populates="moneda_rel")
     
-    # Mu00e9todos para mapear entre Modelo SQLAlchemy y Entidad de Dominio
+    # Métodos para mapear entre Modelo SQLAlchemy y Entidad de Dominio
     def to_entity(self) -> MonedaEntity:
         """Convierte el modelo SQLAlchemy a Entidad de Dominio."""
         return MonedaEntity(
@@ -74,7 +74,7 @@ class TipoDocumento(Base):
     # Relaciones
     clientes = relationship("Cliente", back_populates="tipo_documento_rel", lazy="selectin")
     
-    # Mu00e9todos para mapear entre Modelo SQLAlchemy y Entidad de Dominio
+    # Métodos para mapear entre Modelo SQLAlchemy y Entidad de Dominio
     def to_entity(self) -> TipoDocumentoEntity:
         """Convierte el modelo SQLAlchemy a Entidad de Dominio."""
         return TipoDocumentoEntity(

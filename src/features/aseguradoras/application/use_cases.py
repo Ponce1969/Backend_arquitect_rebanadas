@@ -1,5 +1,10 @@
 
 from ..domain.entities import Aseguradora
+from ..domain.exceptions import (
+    AseguradoraNotFoundException,
+    AseguradoraNombreExistsException,
+    AseguradoraIdentificadorFiscalExistsException
+)
 from .dtos import AseguradoraCreate, AseguradoraResponse, AseguradoraUpdate
 from .interfaces.repositories import AbstractAseguradoraRepository
 
@@ -15,13 +20,13 @@ class CrearAseguradoraUseCase:
         if aseguradora_data.nombre:
             existing = self.repository.get_by_nombre(aseguradora_data.nombre)
             if existing:
-                raise ValueError(f"Ya existe una aseguradora con el nombre {aseguradora_data.nombre}")
+                raise AseguradoraNombreExistsException(aseguradora_data.nombre)
 
         # Verificar si ya existe una aseguradora con el mismo identificador fiscal
         if aseguradora_data.identificador_fiscal:
             existing = self.repository.get_by_identificador_fiscal(aseguradora_data.identificador_fiscal)
             if existing:
-                raise ValueError(f"Ya existe una aseguradora con el identificador fiscal {aseguradora_data.identificador_fiscal}")
+                raise AseguradoraIdentificadorFiscalExistsException(aseguradora_data.identificador_fiscal)
 
         # Crear entidad de dominio
         aseguradora = Aseguradora(
@@ -60,10 +65,10 @@ class ObtenerAseguradoraUseCase:
     def __init__(self, repository: AbstractAseguradoraRepository):
         self.repository = repository
 
-    def execute(self, aseguradora_id: int) -> AseguradoraResponse | None:
+    def execute(self, aseguradora_id: int) -> AseguradoraResponse:
         aseguradora = self.repository.get_by_id(aseguradora_id)
         if not aseguradora:
-            return None
+            raise AseguradoraNotFoundException(aseguradora_id)
 
         return AseguradoraResponse(
             id=aseguradora.id,
@@ -112,23 +117,23 @@ class ActualizarAseguradoraUseCase:
     def __init__(self, repository: AbstractAseguradoraRepository):
         self.repository = repository
 
-    def execute(self, aseguradora_id: int, aseguradora_data: AseguradoraUpdate) -> AseguradoraResponse | None:
+    def execute(self, aseguradora_id: int, aseguradora_data: AseguradoraUpdate) -> AseguradoraResponse:
         # Verificar si la aseguradora existe
         existing_aseguradora = self.repository.get_by_id(aseguradora_id)
         if not existing_aseguradora:
-            return None
+            raise AseguradoraNotFoundException(aseguradora_id)
 
         # Verificar si el nombre ya está en uso por otra aseguradora
         if aseguradora_data.nombre and aseguradora_data.nombre != existing_aseguradora.nombre:
             existing = self.repository.get_by_nombre(aseguradora_data.nombre)
             if existing and existing.id != aseguradora_id:
-                raise ValueError(f"Ya existe otra aseguradora con el nombre {aseguradora_data.nombre}")
+                raise AseguradoraNombreExistsException(aseguradora_data.nombre)
 
         # Verificar si el identificador fiscal ya está en uso por otra aseguradora
         if aseguradora_data.identificador_fiscal and aseguradora_data.identificador_fiscal != existing_aseguradora.identificador_fiscal:
             existing = self.repository.get_by_identificador_fiscal(aseguradora_data.identificador_fiscal)
             if existing and existing.id != aseguradora_id:
-                raise ValueError(f"Ya existe otra aseguradora con el identificador fiscal {aseguradora_data.identificador_fiscal}")
+                raise AseguradoraIdentificadorFiscalExistsException(aseguradora_data.identificador_fiscal)
 
         # Actualizar los campos de la entidad existente
         updated_aseguradora = Aseguradora(
@@ -171,6 +176,9 @@ class EliminarAseguradoraUseCase:
         self.repository = repository
 
     def execute(self, aseguradora_id: int) -> bool:
+        # Verificar si la aseguradora existe antes de intentar eliminarla
+        if not self.repository.get_by_id(aseguradora_id):
+            raise AseguradoraNotFoundException(aseguradora_id)
         return self.repository.delete(aseguradora_id)
 
 

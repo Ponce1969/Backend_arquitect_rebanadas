@@ -15,6 +15,12 @@ from src.features.aseguradoras.application.use_cases import (
     ListarAseguradorasUseCase,
     ObtenerAseguradoraUseCase,
 )
+from src.features.aseguradoras.domain.exceptions import (
+    AseguradoraException,
+    AseguradoraNotFoundException,
+    AseguradoraNombreExistsException,
+    AseguradoraIdentificadorFiscalExistsException,
+)
 from src.features.aseguradoras.infrastructure.repositories import SQLAlchemyAseguradoraRepository
 from src.infrastructure.database import get_db
 
@@ -30,7 +36,11 @@ def crear_aseguradora(
         repository = SQLAlchemyAseguradoraRepository(db)
         use_case = CrearAseguradoraUseCase(repository)
         return use_case.execute(aseguradora)
-    except ValueError as e:
+    except AseguradoraNombreExistsException as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except AseguradoraIdentificadorFiscalExistsException as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except AseguradoraException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
@@ -42,15 +52,20 @@ def crear_aseguradora(
 @router.get("/{aseguradora_id}", response_model=AseguradoraResponse)
 def obtener_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> AseguradoraResponse:
     """Obtiene una aseguradora por su ID."""
-    repository = SQLAlchemyAseguradoraRepository(db)
-    use_case = ObtenerAseguradoraUseCase(repository)
-    aseguradora = use_case.execute(aseguradora_id)
-    if not aseguradora:
+    try:
+        repository = SQLAlchemyAseguradoraRepository(db)
+        use_case = ObtenerAseguradoraUseCase(repository)
+        return use_case.execute(aseguradora_id)
+    except AseguradoraNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Aseguradora con ID {aseguradora_id} no encontrada",
+            detail=str(e),
         )
-    return aseguradora
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al obtener aseguradora: {str(e)}",
+        )
 
 
 @router.get("/", response_model=list[AseguradoraResponse])
@@ -69,14 +84,17 @@ def actualizar_aseguradora(
     try:
         repository = SQLAlchemyAseguradoraRepository(db)
         use_case = ActualizarAseguradoraUseCase(repository)
-        updated_aseguradora = use_case.execute(aseguradora_id, aseguradora)
-        if not updated_aseguradora:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Aseguradora con ID {aseguradora_id} no encontrada",
-            )
-        return updated_aseguradora
-    except ValueError as e:
+        return use_case.execute(aseguradora_id, aseguradora)
+    except AseguradoraNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except AseguradoraNombreExistsException as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except AseguradoraIdentificadorFiscalExistsException as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    except AseguradoraException as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
@@ -88,13 +106,19 @@ def actualizar_aseguradora(
 @router.delete("/{aseguradora_id}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> None:
     """Elimina una aseguradora."""
-    repository = SQLAlchemyAseguradoraRepository(db)
-    use_case = EliminarAseguradoraUseCase(repository)
-    deleted = use_case.execute(aseguradora_id)
-    if not deleted:
+    try:
+        repository = SQLAlchemyAseguradoraRepository(db)
+        use_case = EliminarAseguradoraUseCase(repository)
+        use_case.execute(aseguradora_id)
+    except AseguradoraNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Aseguradora con ID {aseguradora_id} no encontrada",
+            detail=str(e),
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al eliminar aseguradora: {str(e)}",
         )
 
 

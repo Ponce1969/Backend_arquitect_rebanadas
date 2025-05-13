@@ -1,6 +1,13 @@
 from uuid import UUID
 
 from ..domain.entities import Cliente
+from ..domain.exceptions import (
+    ClienteNotFoundException,
+    ClienteNumeroNotFoundException,
+    ClienteDocumentoNotFoundException,
+    ClienteDocumentoExistsException,
+    ClienteEmailExistsException
+)
 from .dtos import ClienteCreate, ClienteResponse, ClienteSearchParams, ClienteUpdate
 from .interfaces.repositories import AbstractClienteRepository
 
@@ -15,12 +22,12 @@ class CrearClienteUseCase:
         # Verificar si ya existe un cliente con el mismo número de documento
         existing = self.repository.get_by_numero_documento(cliente_data.numero_documento)
         if existing:
-            raise ValueError(f"Ya existe un cliente con el número de documento {cliente_data.numero_documento}")
+            raise ClienteDocumentoExistsException(cliente_data.numero_documento)
 
         # Verificar si ya existe un cliente con el mismo email
         existing = self.repository.get_by_email(cliente_data.mail)
         if existing:
-            raise ValueError(f"Ya existe un cliente con el email {cliente_data.mail}")
+            raise ClienteEmailExistsException(cliente_data.mail)
 
         # Crear entidad de dominio
         cliente = Cliente(
@@ -70,10 +77,10 @@ class ObtenerClienteUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self, cliente_id: UUID) -> ClienteResponse | None:
+    def execute(self, cliente_id: UUID) -> ClienteResponse:
         cliente = self.repository.get_by_id(cliente_id)
         if not cliente:
-            return None
+            raise ClienteNotFoundException(cliente_id)
 
         return ClienteResponse(
             id=cliente.id,
@@ -102,10 +109,10 @@ class ObtenerClientePorNumeroUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self, numero_cliente: int) -> ClienteResponse | None:
+    def execute(self, numero_cliente: int) -> ClienteResponse:
         cliente = self.repository.get_by_numero_cliente(numero_cliente)
         if not cliente:
-            return None
+            raise ClienteNumeroNotFoundException(numero_cliente)
 
         return ClienteResponse(
             id=cliente.id,
@@ -134,10 +141,10 @@ class ObtenerClientePorDocumentoUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self, numero_documento: str) -> ClienteResponse | None:
+    def execute(self, numero_documento: str) -> ClienteResponse:
         cliente = self.repository.get_by_numero_documento(numero_documento)
         if not cliente:
-            return None
+            raise ClienteDocumentoNotFoundException(numero_documento)
 
         return ClienteResponse(
             id=cliente.id,
@@ -249,23 +256,23 @@ class ActualizarClienteUseCase:
     def __init__(self, repository: AbstractClienteRepository):
         self.repository = repository
 
-    def execute(self, cliente_id: UUID, cliente_data: ClienteUpdate) -> ClienteResponse | None:
+    def execute(self, cliente_id: UUID, cliente_data: ClienteUpdate) -> ClienteResponse:
         # Verificar si el cliente existe
         existing_cliente = self.repository.get_by_id(cliente_id)
         if not existing_cliente:
-            return None
+            raise ClienteNotFoundException(cliente_id)
 
         # Verificar si el número de documento ya está en uso por otro cliente
         if cliente_data.numero_documento and cliente_data.numero_documento != existing_cliente.numero_documento:
             existing = self.repository.get_by_numero_documento(cliente_data.numero_documento)
             if existing and existing.id != cliente_id:
-                raise ValueError(f"Ya existe otro cliente con el número de documento {cliente_data.numero_documento}")
+                raise ClienteDocumentoExistsException(cliente_data.numero_documento)
 
         # Verificar si el email ya está en uso por otro cliente
         if cliente_data.mail and cliente_data.mail != existing_cliente.mail:
             existing = self.repository.get_by_email(cliente_data.mail)
             if existing and existing.id != cliente_id:
-                raise ValueError(f"Ya existe otro cliente con el email {cliente_data.mail}")
+                raise ClienteEmailExistsException(cliente_data.mail)
 
         # Actualizar los campos de la entidad existente
         updated_cliente = Cliente(
@@ -320,4 +327,7 @@ class EliminarClienteUseCase:
         self.repository = repository
 
     def execute(self, cliente_id: UUID) -> bool:
+        # Verificar si el cliente existe antes de intentar eliminarlo
+        if not self.repository.get_by_id(cliente_id):
+            raise ClienteNotFoundException(cliente_id)
         return self.repository.delete(cliente_id)

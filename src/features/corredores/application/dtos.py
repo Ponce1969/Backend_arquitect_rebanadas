@@ -15,7 +15,7 @@ class CorredorBase(BaseModel):
     esta_activo: bool = True
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CorredorCreate(CorredorBase):
@@ -34,7 +34,7 @@ class CorredorUpdate(BaseModel):
     esta_activo: Optional[bool] = None
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CorredorInDB(CorredorBase):
