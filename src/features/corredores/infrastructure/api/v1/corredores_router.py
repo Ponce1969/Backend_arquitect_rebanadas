@@ -1,4 +1,3 @@
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
@@ -7,7 +6,7 @@ from src.features.corredores.application.dtos import (
     CorredorCreate,
     CorredorDto,
     CorredorSearchParams,
-    CorredorUpdate
+    CorredorUpdate,
 )
 from src.features.corredores.application.use_cases import (
     ActualizarCorredorUseCase,
@@ -18,12 +17,12 @@ from src.features.corredores.application.use_cases import (
     ObtenerCorredorPorDocumentoUseCase,
     ObtenerCorredorPorEmailUseCase,
     ObtenerCorredorPorIdUseCase,
-    ObtenerCorredorPorNumeroUseCase
+    ObtenerCorredorPorNumeroUseCase,
 )
 from src.features.corredores.infrastructure.repositories import SQLAlchemyCorredorRepository
-from src.infrastructure.database import get_db
-from src.infrastructure.security.dependencies import get_current_user, get_admin_user
 from src.features.usuarios.application.dtos import UsuarioDto
+from src.infrastructure.database import get_db
+from src.infrastructure.security.dependencies import get_admin_user, get_current_user
 
 # Crear el router para corredores
 router = APIRouter(
@@ -132,7 +131,7 @@ def obtener_corredor_por_email(
     return corredor
 
 
-@router.get("/", response_model=List[CorredorDto])
+@router.get("/", response_model=list[CorredorDto])
 def listar_corredores(
     db: Session = Depends(get_db),
     current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar corredores
@@ -189,10 +188,10 @@ def eliminar_corredor(
         )
 
 
-@router.get("/buscar/", response_model=List[CorredorDto])
+@router.get("/buscar/", response_model=list[CorredorDto])
 def buscar_corredores(
-    query: Optional[str] = Query(None, description="Término de búsqueda para filtrar corredores"),
-    esta_activo: Optional[bool] = Query(None, description="Filtrar por estado activo/inactivo"),
+    query: str | None = Query(None, description="Término de búsqueda para filtrar corredores"),
+    esta_activo: bool | None = Query(None, description="Filtrar por estado activo/inactivo"),
     db: Session = Depends(get_db),
     current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden buscar corredores
 ):

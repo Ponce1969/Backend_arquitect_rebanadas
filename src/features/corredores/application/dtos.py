@@ -1,7 +1,6 @@
 from datetime import datetime
-from typing import Optional, List
 
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class CorredorBase(BaseModel):
@@ -10,7 +9,7 @@ class CorredorBase(BaseModel):
     direccion: str = Field(..., min_length=2, max_length=200)
     telefono: str = Field(..., min_length=6, max_length=20)
     email: EmailStr
-    contacto: Optional[str] = Field(None, max_length=100)
+    contacto: str | None = Field(None, max_length=100)
     comision_default: float = Field(0.0, ge=0.0, le=100.0)  # Porcentaje entre 0 y 100
     esta_activo: bool = True
     
@@ -25,13 +24,13 @@ class CorredorCreate(CorredorBase):
 
 class CorredorUpdate(BaseModel):
     """DTO para actualizar un corredor."""
-    nombre: Optional[str] = Field(None, min_length=2, max_length=100)
-    direccion: Optional[str] = Field(None, min_length=2, max_length=200)
-    telefono: Optional[str] = Field(None, min_length=6, max_length=20)
-    email: Optional[EmailStr] = None
-    contacto: Optional[str] = Field(None, max_length=100)
-    comision_default: Optional[float] = Field(None, ge=0.0, le=100.0)
-    esta_activo: Optional[bool] = None
+    nombre: str | None = Field(None, min_length=2, max_length=100)
+    direccion: str | None = Field(None, min_length=2, max_length=200)
+    telefono: str | None = Field(None, min_length=6, max_length=20)
+    email: EmailStr | None = None
+    contacto: str | None = Field(None, max_length=100)
+    comision_default: float | None = Field(None, ge=0.0, le=100.0)
+    esta_activo: bool | None = None
     
     class Config:
         from_attributes = True
@@ -51,5 +50,5 @@ class CorredorDto(CorredorInDB):
 
 class CorredorSearchParams(BaseModel):
     """Parámetros para búsqueda de corredores."""
-    query: Optional[str] = None
-    esta_activo: Optional[bool] = None
+    query: str | None = None
+    esta_activo: bool | None = None

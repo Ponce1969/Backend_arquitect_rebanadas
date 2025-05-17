@@ -1,35 +1,33 @@
-from datetime import date
 from uuid import UUID
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.features.corredores.application.dtos_cliente_corredor import (
-    ClienteCorredorDto,
     AsignarClienteCorredorCommand,
-    ReasignarClienteCommand
+    ClienteCorredorDto,
+    ReasignarClienteCommand,
 )
 from src.features.corredores.application.use_cases_cliente_corredor import (
     AsignarClienteCorredorUseCase,
-    ReasignarClienteUseCase,
     EliminarAsignacionClienteCorredorUseCase,
     ListarClientesPorCorredorUseCase,
-    ListarCorredoresPorClienteUseCase
+    ListarCorredoresPorClienteUseCase,
+    ReasignarClienteUseCase,
 )
 from src.features.corredores.dependencies import (
+    get_cliente_corredor_repository,
     get_cliente_repository,
     get_corredor_repository,
-    get_cliente_corredor_repository
 )
 from src.features.corredores.domain.exceptions import (
-    ClienteNoEncontradoException,
-    CorredorNoEncontradoException,
     ClienteCorredorAsignacionDuplicadaException,
     ClienteCorredorNoEncontradoException,
-    FechaAsignacionInvalidaException
+    ClienteNoEncontradoException,
+    CorredorNoEncontradoException,
+    FechaAsignacionInvalidaException,
 )
-from src.infrastructure.security.dependencies import get_current_user, get_admin_user
 from src.features.usuarios.application.dtos import UsuarioDto
+from src.infrastructure.security.dependencies import get_admin_user, get_current_user
 
 router = APIRouter(
     prefix="/clientes-corredores",
@@ -205,7 +203,7 @@ async def eliminar_asignacion_cliente_corredor(
 
 @router.get(
     "/corredor/{corredor_numero}/clientes",
-    response_model=List[ClienteCorredorDto],
+    response_model=list[ClienteCorredorDto],
     status_code=status.HTTP_200_OK,
     summary="Listar clientes por corredor",
     description="Obtiene la lista de clientes asignados a un corredor específico"
@@ -214,7 +212,7 @@ async def listar_clientes_por_corredor(
     corredor_numero: int,
     cliente_corredor_repository=Depends(get_cliente_corredor_repository),
     current_user: UsuarioDto = Depends(get_current_user)
-) -> List[ClienteCorredorDto]:
+) -> list[ClienteCorredorDto]:
     """Lista todos los clientes asignados a un corredor.
     
     Args:
@@ -240,7 +238,7 @@ async def listar_clientes_por_corredor(
 
 @router.get(
     "/cliente/{cliente_id}/corredores",
-    response_model=List[ClienteCorredorDto],
+    response_model=list[ClienteCorredorDto],
     status_code=status.HTTP_200_OK,
     summary="Listar corredores por cliente",
     description="Obtiene la lista de corredores asignados a un cliente específico"
@@ -249,7 +247,7 @@ async def listar_corredores_por_cliente(
     cliente_id: UUID,
     cliente_corredor_repository=Depends(get_cliente_corredor_repository),
     current_user: UsuarioDto = Depends(get_current_user)
-) -> List[ClienteCorredorDto]:
+) -> list[ClienteCorredorDto]:
     """Lista todos los corredores asignados a un cliente.
     
     Args:

@@ -1,18 +1,20 @@
 """Módulo de dependencias para el módulo de corredores."""
-from typing import Generator
+from collections.abc import Generator
 
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from src.infrastructure.database import SessionLocal
-from src.features.corredores.application.interfaces import (
-    ICorredorRepository, 
-    IClienteCorredorRepository
-)
-from src.features.corredores.infrastructure.repositories import SQLAlchemyCorredorRepository
-from src.features.corredores.infrastructure.repositories_cliente_corredor import SQLAlchemyClienteCorredorRepository
 from src.features.clientes.application.interfaces.repositories import IClienteRepository
 from src.features.clientes.infrastructure.repositories import SQLAlchemyClienteRepository
+from src.features.corredores.application.interfaces import (
+    IClienteCorredorRepository,
+    ICorredorRepository,
+)
+from src.features.corredores.infrastructure.repositories import SQLAlchemyCorredorRepository
+from src.features.corredores.infrastructure.repositories_cliente_corredor import (
+    SQLAlchemyClienteCorredorRepository,
+)
+from src.infrastructure.database import SessionLocal
 
 
 def get_db() -> Generator[Session, None, None]:

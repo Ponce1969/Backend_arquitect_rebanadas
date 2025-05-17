@@ -2,11 +2,11 @@ from uuid import UUID
 
 from ..domain.entities import Cliente
 from ..domain.exceptions import (
+    ClienteDocumentoExistsException,
+    ClienteDocumentoNotFoundException,
+    ClienteEmailExistsException,
     ClienteNotFoundException,
     ClienteNumeroNotFoundException,
-    ClienteDocumentoNotFoundException,
-    ClienteDocumentoExistsException,
-    ClienteEmailExistsException
 )
 from .dtos import ClienteCreate, ClienteResponse, ClienteSearchParams, ClienteUpdate
 from .interfaces.repositories import IClienteRepository

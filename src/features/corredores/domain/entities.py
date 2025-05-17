@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Optional
 from uuid import UUID
 
 # Importamos Entidades de Dominio relacionadas si es necesario
@@ -60,7 +59,7 @@ class ClienteCorredor:
         # La fecha de asignación no puede ser futura
         return self.fecha_asignacion <= date.today()
     
-    def es_activa(self, fecha_referencia: Optional[date] = None) -> bool:
+    def es_activa(self, fecha_referencia: date | None = None) -> bool:
         """
         Verifica si la asignación está activa en una fecha de referencia.
         

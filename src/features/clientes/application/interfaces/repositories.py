@@ -1,7 +1,5 @@
 import abc
 import uuid
-from typing import List, Optional
-from datetime import date
 
 # Importamos la Entidad de Dominio Cliente
 from src.features.clientes.domain.entities import Cliente
@@ -16,27 +14,27 @@ class IClienteRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_id(self, cliente_id: uuid.UUID) -> Optional[Cliente]:
+    def get_by_id(self, cliente_id: uuid.UUID) -> Cliente | None:
         """Obtiene un cliente por su ID técnico (UUID)."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_numero_cliente(self, numero_cliente: int) -> Optional[Cliente]:
+    def get_by_numero_cliente(self, numero_cliente: int) -> Cliente | None:
         """Obtiene un cliente por su número de cliente (identificador de negocio)."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_documento(self, tipo_documento_id: int, numero_documento: str) -> Optional[Cliente]:
+    def get_by_documento(self, tipo_documento_id: int, numero_documento: str) -> Cliente | None:
         """Obtiene un cliente por su tipo y número de documento."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_email(self, email: str) -> Optional[Cliente]:
+    def get_by_email(self, email: str) -> Cliente | None:
         """Obtiene un cliente por su dirección de correo electrónico."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_all(self) -> List[Cliente]:
+    def get_all(self) -> list[Cliente]:
         """Obtiene todos los clientes."""
         raise NotImplementedError
 
@@ -51,6 +49,6 @@ class IClienteRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def search(self, query: str = None, tipo_documento_id: int = None, localidad: str = None) -> List[Cliente]:
+    def search(self, query: str = None, tipo_documento_id: int = None, localidad: str = None) -> list[Cliente]:
         """Busca clientes según criterios específicos."""
         raise NotImplementedError

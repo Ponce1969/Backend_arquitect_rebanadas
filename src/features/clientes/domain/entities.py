@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import List, Optional
 from uuid import UUID
 
 # Importamos la entidad TipoDocumento del dominio compartido
@@ -28,8 +27,8 @@ class Cliente:
     fecha_creacion: datetime | None = None
     fecha_modificacion: datetime | None = None
     # Relaciones
-    tipo_documento: Optional[TipoDocumento] = None
+    tipo_documento: TipoDocumento | None = None
     # creado_por_usuario: Optional['Usuario'] = None
     # modificado_por_usuario: Optional['Usuario'] = None
-    corredores_asociados: List[object] = field(default_factory=list)  # Tipo 'ClienteCorredor'
-    movimientos_vigencias: List[object] = field(default_factory=list)  # Tipo 'MovimientoVigencia'
+    corredores_asociados: list[object] = field(default_factory=list)  # Tipo 'ClienteCorredor'
+    movimientos_vigencias: list[object] = field(default_factory=list)  # Tipo 'MovimientoVigencia'

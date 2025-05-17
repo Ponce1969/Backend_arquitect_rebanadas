@@ -1,4 +1,3 @@
-from typing import List, Optional
 
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -37,7 +36,7 @@ class SQLAlchemyCorredorRepository(ICorredorRepository):
             clientes_asociados=[]  # Aquí se podrían mapear los clientes relacionados si es necesario
         )
 
-    def _map_to_db(self, corredor: CorredorDomain, db_corredor: Optional[CorredorModel] = None) -> CorredorModel:
+    def _map_to_db(self, corredor: CorredorDomain, db_corredor: CorredorModel | None = None) -> CorredorModel:
         """Mapea una entidad de dominio a un modelo SQLAlchemy."""
         if db_corredor is None:
             db_corredor = CorredorModel()
@@ -68,27 +67,27 @@ class SQLAlchemyCorredorRepository(ICorredorRepository):
         self.session.refresh(db_corredor)
         return self._map_to_domain(db_corredor)
 
-    def get_by_id(self, corredor_id: int) -> Optional[CorredorDomain]:
+    def get_by_id(self, corredor_id: int) -> CorredorDomain | None:
         """Obtiene un corredor por su ID técnico."""
         db_corredor = self.session.query(CorredorModel).filter(CorredorModel.id == corredor_id).first()
         return self._map_to_domain(db_corredor) if db_corredor else None
 
-    def get_by_numero(self, numero: int) -> Optional[CorredorDomain]:
+    def get_by_numero(self, numero: int) -> CorredorDomain | None:
         """Obtiene un corredor por su número (identificador de negocio)."""
         db_corredor = self.session.query(CorredorModel).filter(CorredorModel.numero == numero).first()
         return self._map_to_domain(db_corredor) if db_corredor else None
 
-    def get_by_documento(self, documento: str) -> Optional[CorredorDomain]:
+    def get_by_documento(self, documento: str) -> CorredorDomain | None:
         """Obtiene un corredor por su número de documento."""
         db_corredor = self.session.query(CorredorModel).filter(CorredorModel.documento == documento).first()
         return self._map_to_domain(db_corredor) if db_corredor else None
 
-    def get_by_email(self, email: str) -> Optional[CorredorDomain]:
+    def get_by_email(self, email: str) -> CorredorDomain | None:
         """Obtiene un corredor por su dirección de correo electrónico."""
         db_corredor = self.session.query(CorredorModel).filter(CorredorModel.mail == email).first()
         return self._map_to_domain(db_corredor) if db_corredor else None
 
-    def get_all(self) -> List[CorredorDomain]:
+    def get_all(self) -> list[CorredorDomain]:
         """Obtiene todos los corredores."""
         db_corredores = self.session.query(CorredorModel).all()
         return [self._map_to_domain(db_corredor) for db_corredor in db_corredores]
@@ -113,7 +112,7 @@ class SQLAlchemyCorredorRepository(ICorredorRepository):
         self.session.delete(db_corredor)
         self.session.commit()
 
-    def search(self, query: str = None, esta_activo: bool = None) -> List[CorredorDomain]:
+    def search(self, query: str = None, esta_activo: bool = None) -> list[CorredorDomain]:
         """Busca corredores según criterios específicos."""
         db_query = self.session.query(CorredorModel)
 

@@ -1,9 +1,6 @@
 # Este archivo permite que el directorio sea un paquete Python
 
-from .repositories import (
-    ICorredorRepository,
-    IClienteCorredorRepository
-)
+from .repositories import IClienteCorredorRepository, ICorredorRepository
 
 __all__ = [
     'ICorredorRepository',

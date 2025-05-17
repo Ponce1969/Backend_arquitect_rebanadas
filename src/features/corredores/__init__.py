@@ -6,32 +6,23 @@ incluyendo su asignación a clientes y otras operaciones relacionadas.
 
 # Exportar componentes principales
 from .application.dtos_cliente_corredor import (
-    ClienteCorredorDto,
     AsignarClienteCorredorCommand,
-    ReasignarClienteCommand
+    ClienteCorredorDto,
+    ReasignarClienteCommand,
 )
-
+from .application.interfaces.repositories import IClienteCorredorRepository, ICorredorRepository
 from .application.use_cases_cliente_corredor import (
     AsignarClienteCorredorUseCase,
-    ReasignarClienteUseCase,
     EliminarAsignacionClienteCorredorUseCase,
     ListarClientesPorCorredorUseCase,
-    ListarCorredoresPorClienteUseCase
+    ListarCorredoresPorClienteUseCase,
+    ReasignarClienteUseCase,
 )
-
-from .application.interfaces.repositories import (
-    IClienteCorredorRepository,
-    ICorredorRepository
-)
-
-from .infrastructure.repositories_cliente_corredor import SQLAlchemyClienteCorredorRepository
-from .infrastructure.repositories import SQLAlchemyCorredorRepository
 
 # Exportar dependencias
-from .dependencies import (
-    get_corredor_repository,
-    get_cliente_corredor_repository
-)
+from .dependencies import get_cliente_corredor_repository, get_corredor_repository
+from .infrastructure.repositories import SQLAlchemyCorredorRepository
+from .infrastructure.repositories_cliente_corredor import SQLAlchemyClienteCorredorRepository
 
 __all__ = [
     # DTOs

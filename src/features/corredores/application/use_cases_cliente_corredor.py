@@ -1,23 +1,18 @@
 from datetime import date
-from typing import List
 from uuid import UUID
 
 from src.features.corredores.application.dtos_cliente_corredor import (
-    ClienteCorredorDto,
     AsignarClienteCorredorCommand,
-    ReasignarClienteCommand
+    ClienteCorredorDto,
+    ReasignarClienteCommand,
 )
-from src.features.corredores.domain.entities import ClienteCorredor as ClienteCorredorEntity
 from src.features.corredores.domain.exceptions import (
-    ClienteNoEncontradoException,
-    CorredorNoEncontradoException,
     ClienteCorredorAsignacionDuplicadaException,
     ClienteCorredorNoEncontradoException,
-    FechaAsignacionInvalidaException
+    ClienteNoEncontradoException,
+    CorredorNoEncontradoException,
+    FechaAsignacionInvalidaException,
 )
-from src.features.corredores.application.interfaces.repositories import IClienteCorredorRepository
-from src.features.clientes.application.interfaces.repositories import IClienteRepository
-from src.features.corredores.application.interfaces.repositories import ICorredorRepository
 
 
 class AsignarClienteCorredorUseCase:
@@ -191,7 +186,7 @@ class ListarClientesPorCorredorUseCase:
     def __init__(self, cliente_corredor_repository):
         self.cliente_corredor_repository = cliente_corredor_repository
     
-    def execute(self, corredor_numero: int) -> List[ClienteCorredorDto]:
+    def execute(self, corredor_numero: int) -> list[ClienteCorredorDto]:
         """
         Lista todos los clientes asignados a un corredor.
         
@@ -221,7 +216,7 @@ class ListarCorredoresPorClienteUseCase:
     def __init__(self, cliente_corredor_repository):
         self.cliente_corredor_repository = cliente_corredor_repository
     
-    def execute(self, cliente_id: UUID) -> List[ClienteCorredorDto]:
+    def execute(self, cliente_id: UUID) -> list[ClienteCorredorDto]:
         """
         Lista todos los corredores asignados a un cliente.
         

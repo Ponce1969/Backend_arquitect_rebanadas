@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -9,12 +9,12 @@ from src.features.corredores.infrastructure.models import Corredor, ClienteCorre
 from src.features.corredores.domain.entities import ClienteCorredor as ClienteCorredorEntity
 from src.features.corredores.domain.exceptions import (
     ClienteCorredorAsignacionDuplicadaException,
-    ClienteCorredorNoEncontradoException,
     ClienteNoEncontradoException,
     CorredorNoEncontradoException,
     FechaAsignacionInvalidaException
 )
 from src.features.corredores.application.interfaces.repositories import IClienteCorredorRepository
+from src.features.corredores.infrastructure.models import Corredor
 
 
 class SQLAlchemyClienteCorredorRepository(IClienteCorredorRepository):
@@ -34,7 +34,7 @@ class SQLAlchemyClienteCorredorRepository(IClienteCorredorRepository):
         """
         self.session = session
     
-    def _to_entity(self, model: ClienteCorredorModel) -> ClienteCorredorEntity:
+    def _to_entity(self, model: ClienteCorredorModel) -> Optional[ClienteCorredorEntity]:
         """
         Convierte un modelo de SQLAlchemy a una entidad de dominio.
         
@@ -53,7 +53,7 @@ class SQLAlchemyClienteCorredorRepository(IClienteCorredorRepository):
             fecha_asignacion=model.fecha_asignacion
         )
     
-    def _to_model(self, entity: ClienteCorredorEntity) -> ClienteCorredorModel:
+    def _to_model(self, entity: ClienteCorredorEntity) -> Optional[ClienteCorredorModel]:
         """
         Convierte una entidad de dominio a un modelo de SQLAlchemy.
         
@@ -98,7 +98,7 @@ class SQLAlchemyClienteCorredorRepository(IClienteCorredorRepository):
         
         return self._to_entity(model)
     
-    def get_by_cliente(self, cliente_id: UUID) -> List[ClienteCorredorEntity]:
+    def get_by_cliente(self, cliente_id: UUID) -> list[ClienteCorredorEntity]:
         """
         Obtiene todas las asignaciones para un cliente específico.
         
@@ -114,7 +114,7 @@ class SQLAlchemyClienteCorredorRepository(IClienteCorredorRepository):
         
         return [self._to_entity(model) for model in models]
     
-    def get_by_corredor(self, corredor_numero: int) -> List[ClienteCorredorEntity]:
+    def get_by_corredor(self, corredor_numero: int) -> list[ClienteCorredorEntity]:
         """
         Obtiene todas las asignaciones para un corredor específico.
         
@@ -190,6 +190,11 @@ class SQLAlchemyClienteCorredorRepository(IClienteCorredorRepository):
         Returns:
             True si se eliminó correctamente, False si no existía
         """
+        asignacion = self.get_by_cliente_corredor(cliente_id, corredor_numero)
+        if not asignacion:
+            return False
+        
+        # Buscar el modelo correspondiente a la entidad
         model = self.session.query(ClienteCorredorModel).filter_by(
             cliente_id=cliente_id,
             corredor_numero=corredor_numero
@@ -198,13 +203,42 @@ class SQLAlchemyClienteCorredorRepository(IClienteCorredorRepository):
         if not model:
             return False
             
-    def remove(self, cliente_id: UUID, corredor_numero: int) -> bool:
-        """Elimina una asignación entre un cliente y un corredor."""
-        asignacion = self.get_by_cliente_corredor(cliente_id, corredor_numero)
-        if not asignacion:
-            return False
-        
-        self.session.delete(asignacion)
+        self.session.delete(model)
         self.session.commit()
         
         return True
+
+    def update(self, cliente_id: UUID, corredor_numero_antiguo: int, 
+              corredor_numero_nuevo: int, fecha_asignacion: date) -> ClienteCorredorEntity:
+        """
+        Actualiza una asignación de cliente entre corredores.
+        
+        Args:
+            cliente_id: ID del cliente a reasignar
+            corredor_numero_antiguo: Número del corredor actual
+            corredor_numero_nuevo: Número del nuevo corredor
+            fecha_asignacion: Nueva fecha de asignación
+            
+        Returns:
+            La entidad ClienteCorredor actualizada
+            
+        Raises:
+            ClienteCorredorNoEncontradoException: Si no existe la asignación original
+            ClienteCorredorAsignacionDuplicadaException: Si ya existe una asignación para el nuevo par cliente-corredor
+        """
+        # Verificar que la asignación original existe
+        asignacion_original = self.get_by_cliente_corredor(cliente_id, corredor_numero_antiguo)
+        if not asignacion_original:
+            raise ClienteNoEncontradoException(f"No existe asignación para el cliente {cliente_id} con el corredor {corredor_numero_antiguo}")
+        
+        # Si el corredor nuevo es diferente al antiguo, verificar que no exista ya una asignación
+        if corredor_numero_antiguo != corredor_numero_nuevo and self.exists(cliente_id, corredor_numero_nuevo):
+            raise ClienteCorredorAsignacionDuplicadaException(
+                f"El cliente {cliente_id} ya está asignado al corredor {corredor_numero_nuevo}"
+            )
+        
+        # Eliminar la asignación original
+        self.remove(cliente_id, corredor_numero_antiguo)
+        
+        # Crear la nueva asignación
+        return self.add(cliente_id, corredor_numero_nuevo, fecha_asignacion)

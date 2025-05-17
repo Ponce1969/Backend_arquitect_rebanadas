@@ -1,5 +1,4 @@
 import abc
-from typing import List, Optional
 
 # Importamos la Entidad de Dominio Corredor
 from src.features.corredores.domain.entities import Corredor
@@ -14,27 +13,27 @@ class ICorredorRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_id(self, corredor_id: int) -> Optional[Corredor]:
+    def get_by_id(self, corredor_id: int) -> Corredor | None:
         """Obtiene un corredor por su ID técnico."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_numero(self, numero: int) -> Optional[Corredor]:
+    def get_by_numero(self, numero: int) -> Corredor | None:
         """Obtiene un corredor por su número (identificador de negocio)."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_documento(self, documento: str) -> Optional[Corredor]:
+    def get_by_documento(self, documento: str) -> Corredor | None:
         """Obtiene un corredor por su número de documento."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_email(self, email: str) -> Optional[Corredor]:
+    def get_by_email(self, email: str) -> Corredor | None:
         """Obtiene un corredor por su dirección de correo electrónico."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_all(self) -> List[Corredor]:
+    def get_all(self) -> list[Corredor]:
         """Obtiene todos los corredores."""
         raise NotImplementedError
 
@@ -49,25 +48,24 @@ class ICorredorRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def search(self, query: str = None, esta_activo: bool = None) -> List[Corredor]:
+    def search(self, query: str = None, esta_activo: bool = None) -> list[Corredor]:
         """Busca corredores según criterios específicos."""
         raise NotImplementedError
 
 
 import abc
 from datetime import date
-from typing import List, Optional, Dict, Any
 from uuid import UUID
 
 # Importamos las Entidades de Dominio
-from src.features.corredores.domain.entities import Corredor, ClienteCorredor
+from src.features.corredores.domain.entities import ClienteCorredor, Corredor
 
 
 class IClienteCorredorRepository(abc.ABC):
     """Interfaz para el Repositorio de la relación Cliente-Corredor."""
     
     @abc.abstractmethod
-    def get_by_cliente_corredor(self, cliente_id: UUID, corredor_numero: int) -> Optional[ClienteCorredor]:
+    def get_by_cliente_corredor(self, cliente_id: UUID, corredor_numero: int) -> ClienteCorredor | None:
         """
         Obtiene una asignación específica entre un cliente y un corredor.
         
@@ -81,7 +79,7 @@ class IClienteCorredorRepository(abc.ABC):
         raise NotImplementedError
     
     @abc.abstractmethod
-    def get_by_cliente(self, cliente_id: UUID) -> List[ClienteCorredor]:
+    def get_by_cliente(self, cliente_id: UUID) -> list[ClienteCorredor]:
         """
         Obtiene todas las asignaciones para un cliente específico.
         
@@ -94,7 +92,7 @@ class IClienteCorredorRepository(abc.ABC):
         raise NotImplementedError
     
     @abc.abstractmethod
-    def get_by_corredor(self, corredor_numero: int) -> List[ClienteCorredor]:
+    def get_by_corredor(self, corredor_numero: int) -> list[ClienteCorredor]:
         """
         Obtiene todas las asignaciones para un corredor específico.
         

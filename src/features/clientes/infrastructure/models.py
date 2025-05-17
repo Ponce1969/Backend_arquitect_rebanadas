@@ -14,8 +14,8 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from src.infrastructure.database import Base
 from src.features.tipos_documento.infrastructure.models import TipoDocumento as TipoDocumentoModel
+from src.infrastructure.database import Base
 
 
 def get_utc_now():

@@ -1,5 +1,5 @@
-from typing import Optional
 from uuid import UUID
+
 
 class CorredorException(Exception):
     """Excepción base para el slice de Corredores."""

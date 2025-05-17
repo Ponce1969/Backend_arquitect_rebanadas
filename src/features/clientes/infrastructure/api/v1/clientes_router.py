@@ -20,17 +20,17 @@ from src.features.clientes.application.use_cases import (
     ObtenerClienteUseCase,
 )
 from src.features.clientes.domain.exceptions import (
+    ClienteDocumentoExistsException,
+    ClienteDocumentoNotFoundException,
+    ClienteEmailExistsException,
     ClienteException,
     ClienteNotFoundException,
     ClienteNumeroNotFoundException,
-    ClienteDocumentoNotFoundException,
-    ClienteDocumentoExistsException,
-    ClienteEmailExistsException,
 )
 from src.features.clientes.infrastructure.repositories import SQLAlchemyClienteRepository
-from src.infrastructure.database import get_db
-from src.infrastructure.security.dependencies import get_current_user, get_admin_user
 from src.features.usuarios.application.dtos import UsuarioDto
+from src.infrastructure.database import get_db
+from src.infrastructure.security.dependencies import get_admin_user, get_current_user
 
 router = APIRouter(prefix="/clientes", tags=["clientes"])
 

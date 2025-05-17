@@ -1,15 +1,12 @@
-from typing import List, Optional
 
+from ..domain.entities import Corredor as CorredorDomain
 from .dtos import (
-    CorredorBase,
     CorredorCreate,
     CorredorDto,
-    CorredorInDB,
     CorredorSearchParams,
-    CorredorUpdate
+    CorredorUpdate,
 )
 from .interfaces.repositories import ICorredorRepository
-from ..domain.entities import Corredor as CorredorDomain
 
 
 class CrearCorredorUseCase:
@@ -68,7 +65,7 @@ class ObtenerCorredorPorIdUseCase:
     def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
-    def execute(self, corredor_id: int) -> Optional[CorredorDto]:
+    def execute(self, corredor_id: int) -> CorredorDto | None:
         corredor = self.repository.get_by_id(corredor_id)
         if not corredor:
             return None
@@ -92,7 +89,7 @@ class ObtenerCorredorPorNumeroUseCase:
     def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
-    def execute(self, numero: int) -> Optional[CorredorDto]:
+    def execute(self, numero: int) -> CorredorDto | None:
         corredor = self.repository.get_by_numero(numero)
         if not corredor:
             return None
@@ -116,7 +113,7 @@ class ObtenerCorredorPorDocumentoUseCase:
     def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
-    def execute(self, documento: str) -> Optional[CorredorDto]:
+    def execute(self, documento: str) -> CorredorDto | None:
         corredor = self.repository.get_by_documento(documento)
         if not corredor:
             return None
@@ -140,7 +137,7 @@ class ObtenerCorredorPorEmailUseCase:
     def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
-    def execute(self, email: str) -> Optional[CorredorDto]:
+    def execute(self, email: str) -> CorredorDto | None:
         corredor = self.repository.get_by_email(email)
         if not corredor:
             return None
@@ -164,7 +161,7 @@ class ListarCorredoresUseCase:
     def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
-    def execute(self) -> List[CorredorDto]:
+    def execute(self) -> list[CorredorDto]:
         corredores = self.repository.get_all()
         return [
             CorredorDto(
@@ -188,7 +185,7 @@ class ActualizarCorredorUseCase:
     def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
-    def execute(self, numero: int, corredor_data: CorredorUpdate) -> Optional[CorredorDto]:
+    def execute(self, numero: int, corredor_data: CorredorUpdate) -> CorredorDto | None:
         # Verificar si el corredor existe
         corredor = self.repository.get_by_numero(numero)
         if not corredor:
@@ -271,7 +268,7 @@ class BuscarCorredoresUseCase:
     def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
-    def execute(self, search_params: CorredorSearchParams) -> List[CorredorDto]:
+    def execute(self, search_params: CorredorSearchParams) -> list[CorredorDto]:
         corredores = self.repository.search(
             query=search_params.query,
             esta_activo=search_params.esta_activo
