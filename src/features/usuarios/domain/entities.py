@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 # Importamos los tipos compartidos (Roles y Permisos)
-from src.domain.shared.custom_types import Role, RolePermissions
+from src.features.usuarios.domain.types import Role, RolePermissions
 
 
 @dataclass

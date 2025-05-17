@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 # Importamos el Enum de Roles
-from src.domain.shared.custom_types import Role
+from src.features.usuarios.domain.types import Role
 
 
 # DTO para el registro de usuario (entrada a RegistrarUsuarioUseCase)
