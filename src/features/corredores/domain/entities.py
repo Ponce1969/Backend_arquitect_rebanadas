@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import date
+from typing import Optional
+from uuid import UUID
 
 # Importamos Entidades de Dominio relacionadas si es necesario
 # from src.features.usuarios.domain.entities import Usuario
@@ -38,3 +40,37 @@ class Corredor:
         if self.fecha_baja is not None and self.fecha_baja <= date.today():
              self.fecha_baja = None # Re-activar si estaba dado de baja
         # Lógica adicional de activación
+
+
+@dataclass
+class ClienteCorredor:
+    """Entidad de Dominio para la relación entre un Cliente y un Corredor."""
+    cliente_id: UUID
+    corredor_numero: int
+    fecha_asignacion: date
+    
+    # Métodos de negocio
+    def es_valida(self) -> bool:
+        """
+        Verifica si la asignación es válida según las reglas de negocio.
+        
+        Returns:
+            bool: True si la asignación es válida, False en caso contrario.
+        """
+        # La fecha de asignación no puede ser futura
+        return self.fecha_asignacion <= date.today()
+    
+    def es_activa(self, fecha_referencia: Optional[date] = None) -> bool:
+        """
+        Verifica si la asignación está activa en una fecha de referencia.
+        
+        Args:
+            fecha_referencia: Fecha para verificar la vigencia. Si es None, se usa la fecha actual.
+            
+        Returns:
+            bool: True si la asignación está activa en la fecha de referencia.
+        """
+        if fecha_referencia is None:
+            fecha_referencia = date.today()
+            
+        return self.fecha_asignacion <= fecha_referencia

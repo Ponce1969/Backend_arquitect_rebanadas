@@ -7,7 +7,7 @@ from datetime import date
 from src.features.clientes.domain.entities import Cliente
 
 
-class AbstractClienteRepository(abc.ABC):
+class IClienteRepository(abc.ABC):
     """Interfaz Abstracta para el Repositorio de Clientes."""
 
     @abc.abstractmethod

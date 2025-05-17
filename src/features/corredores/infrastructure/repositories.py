@@ -3,12 +3,12 @@ from typing import List, Optional
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from ..application.interfaces.repositories import AbstractCorredorRepository
+from ..application.interfaces.repositories import ICorredorRepository
 from ..domain.entities import Corredor as CorredorDomain
 from .models import Corredor as CorredorModel
 
 
-class SQLAlchemyCorredorRepository(AbstractCorredorRepository):
+class SQLAlchemyCorredorRepository(ICorredorRepository):
     """Implementaciu00f3n SQLAlchemy del repositorio de Corredores."""
 
     def __init__(self, session: Session):

@@ -8,14 +8,14 @@ from .dtos import (
     CorredorSearchParams,
     CorredorUpdate
 )
-from .interfaces.repositories import AbstractCorredorRepository
+from .interfaces.repositories import ICorredorRepository
 from ..domain.entities import Corredor as CorredorDomain
 
 
 class CrearCorredorUseCase:
     """Caso de uso para crear un nuevo corredor."""
 
-    def __init__(self, repository: AbstractCorredorRepository):
+    def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
     def execute(self, corredor_data: CorredorCreate) -> CorredorDto:
@@ -65,7 +65,7 @@ class CrearCorredorUseCase:
 class ObtenerCorredorPorIdUseCase:
     """Caso de uso para obtener un corredor por su ID."""
 
-    def __init__(self, repository: AbstractCorredorRepository):
+    def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
     def execute(self, corredor_id: int) -> Optional[CorredorDto]:
@@ -89,7 +89,7 @@ class ObtenerCorredorPorIdUseCase:
 class ObtenerCorredorPorNumeroUseCase:
     """Caso de uso para obtener un corredor por su número."""
 
-    def __init__(self, repository: AbstractCorredorRepository):
+    def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
     def execute(self, numero: int) -> Optional[CorredorDto]:
@@ -113,7 +113,7 @@ class ObtenerCorredorPorNumeroUseCase:
 class ObtenerCorredorPorDocumentoUseCase:
     """Caso de uso para obtener un corredor por su documento."""
 
-    def __init__(self, repository: AbstractCorredorRepository):
+    def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
     def execute(self, documento: str) -> Optional[CorredorDto]:
@@ -137,7 +137,7 @@ class ObtenerCorredorPorDocumentoUseCase:
 class ObtenerCorredorPorEmailUseCase:
     """Caso de uso para obtener un corredor por su email."""
 
-    def __init__(self, repository: AbstractCorredorRepository):
+    def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
     def execute(self, email: str) -> Optional[CorredorDto]:
@@ -161,7 +161,7 @@ class ObtenerCorredorPorEmailUseCase:
 class ListarCorredoresUseCase:
     """Caso de uso para listar todos los corredores."""
 
-    def __init__(self, repository: AbstractCorredorRepository):
+    def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
     def execute(self) -> List[CorredorDto]:
@@ -185,7 +185,7 @@ class ListarCorredoresUseCase:
 class ActualizarCorredorUseCase:
     """Caso de uso para actualizar un corredor existente."""
 
-    def __init__(self, repository: AbstractCorredorRepository):
+    def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
     def execute(self, numero: int, corredor_data: CorredorUpdate) -> Optional[CorredorDto]:
@@ -254,7 +254,7 @@ class ActualizarCorredorUseCase:
 class EliminarCorredorUseCase:
     """Caso de uso para eliminar un corredor."""
 
-    def __init__(self, repository: AbstractCorredorRepository):
+    def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
     def execute(self, corredor_id: int) -> bool:
@@ -268,7 +268,7 @@ class EliminarCorredorUseCase:
 class BuscarCorredoresUseCase:
     """Caso de uso para buscar corredores según criterios específicos."""
 
-    def __init__(self, repository: AbstractCorredorRepository):
+    def __init__(self, repository: ICorredorRepository):
         self.repository = repository
 
     def execute(self, search_params: CorredorSearchParams) -> List[CorredorDto]:

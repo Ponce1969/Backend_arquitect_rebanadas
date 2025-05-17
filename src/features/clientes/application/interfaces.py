@@ -4,7 +4,7 @@ from uuid import UUID
 from ..domain.entities import Cliente
 
 
-class AbstractClienteRepository(abc.ABC):
+class IClienteRepository(abc.ABC):
     """Interfaz abstracta para el repositorio de Clientes."""
 
     @abc.abstractmethod

@@ -9,13 +9,13 @@ from ..domain.exceptions import (
     ClienteEmailExistsException
 )
 from .dtos import ClienteCreate, ClienteResponse, ClienteSearchParams, ClienteUpdate
-from .interfaces.repositories import AbstractClienteRepository
+from .interfaces.repositories import IClienteRepository
 
 
 class CrearClienteUseCase:
     """Caso de uso para crear un nuevo cliente."""
 
-    def __init__(self, repository: AbstractClienteRepository):
+    def __init__(self, repository: IClienteRepository):
         self.repository = repository
 
     def execute(self, cliente_data: ClienteCreate) -> ClienteResponse:
@@ -74,7 +74,7 @@ class CrearClienteUseCase:
 class ObtenerClienteUseCase:
     """Caso de uso para obtener un cliente por su ID."""
 
-    def __init__(self, repository: AbstractClienteRepository):
+    def __init__(self, repository: IClienteRepository):
         self.repository = repository
 
     def execute(self, cliente_id: UUID) -> ClienteResponse:
@@ -106,7 +106,7 @@ class ObtenerClienteUseCase:
 class ObtenerClientePorNumeroUseCase:
     """Caso de uso para obtener un cliente por su número de cliente."""
 
-    def __init__(self, repository: AbstractClienteRepository):
+    def __init__(self, repository: IClienteRepository):
         self.repository = repository
 
     def execute(self, numero_cliente: int) -> ClienteResponse:
@@ -138,7 +138,7 @@ class ObtenerClientePorNumeroUseCase:
 class ObtenerClientePorDocumentoUseCase:
     """Caso de uso para obtener un cliente por su número de documento."""
 
-    def __init__(self, repository: AbstractClienteRepository):
+    def __init__(self, repository: IClienteRepository):
         self.repository = repository
 
     def execute(self, numero_documento: str) -> ClienteResponse:
@@ -170,7 +170,7 @@ class ObtenerClientePorDocumentoUseCase:
 class ListarClientesUseCase:
     """Caso de uso para listar todos los clientes."""
 
-    def __init__(self, repository: AbstractClienteRepository):
+    def __init__(self, repository: IClienteRepository):
         self.repository = repository
 
     def execute(self) -> list[ClienteResponse]:
@@ -202,7 +202,7 @@ class ListarClientesUseCase:
 class BuscarClientesUseCase:
     """Caso de uso para buscar clientes."""
 
-    def __init__(self, repository: AbstractClienteRepository):
+    def __init__(self, repository: IClienteRepository):
         self.repository = repository
 
     def execute(self, search_params: ClienteSearchParams) -> list[ClienteResponse]:
@@ -253,7 +253,7 @@ class BuscarClientesUseCase:
 class ActualizarClienteUseCase:
     """Caso de uso para actualizar un cliente existente."""
 
-    def __init__(self, repository: AbstractClienteRepository):
+    def __init__(self, repository: IClienteRepository):
         self.repository = repository
 
     def execute(self, cliente_id: UUID, cliente_data: ClienteUpdate) -> ClienteResponse:
@@ -323,7 +323,7 @@ class ActualizarClienteUseCase:
 class EliminarClienteUseCase:
     """Caso de uso para eliminar un cliente."""
 
-    def __init__(self, repository: AbstractClienteRepository):
+    def __init__(self, repository: IClienteRepository):
         self.repository = repository
 
     def execute(self, cliente_id: UUID) -> bool:

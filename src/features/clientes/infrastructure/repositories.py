@@ -3,12 +3,12 @@ from uuid import UUID
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from ..application.interfaces.repositories import AbstractClienteRepository
+from ..application.interfaces.repositories import IClienteRepository
 from ..domain.entities import Cliente as ClienteDomain
 from .models import Cliente as ClienteModel
 
 
-class SQLAlchemyClienteRepository(AbstractClienteRepository):
+class SQLAlchemyClienteRepository(IClienteRepository):
     """Implementación SQLAlchemy del repositorio de Clientes."""
 
     def __init__(self, session: Session):

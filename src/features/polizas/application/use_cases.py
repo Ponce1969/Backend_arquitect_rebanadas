@@ -4,8 +4,8 @@ from typing import List, Optional
 
 # Importamos las interfaces de los repositorios
 from src.features.polizas.application.interfaces.repositories import AbstractPolizaRepository
-from src.features.clientes.application.interfaces.repositories import AbstractClienteRepository
-from src.features.corredores.application.interfaces.repositories import AbstractCorredorRepository
+from src.features.clientes.application.interfaces.repositories import IClienteRepository
+from src.features.corredores.application.interfaces.repositories import ICorredorRepository
 from src.features.tipos_seguros.application.interfaces.repositories import AbstractTipoSeguroRepository
 # from src.domain.shared.interfaces.repositories import AbstractMonedaRepository  # Asumimos que existe
 
@@ -32,8 +32,8 @@ class EmitirPolizaUseCase:
     def __init__(
         self,
         poliza_repository: AbstractPolizaRepository,
-        cliente_repository: AbstractClienteRepository,
-        corredor_repository: AbstractCorredorRepository,
+        cliente_repository: IClienteRepository,
+        corredor_repository: ICorredorRepository,
         tipo_seguro_repository: AbstractTipoSeguroRepository,
         # moneda_repository: AbstractMonedaRepository  # Asumimos que existe
     ):
@@ -176,7 +176,7 @@ class ActualizarPolizaUseCase:
     def __init__(
         self,
         poliza_repository: AbstractPolizaRepository,
-        corredor_repository: AbstractCorredorRepository,
+        corredor_repository: ICorredorRepository,
         # moneda_repository: AbstractMonedaRepository  # Asumimos que existe
     ):
         self.poliza_repository = poliza_repository
