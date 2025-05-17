@@ -19,6 +19,7 @@ from src.features.sustituciones_corredores.infrastructure.api.v1.sustituciones_r
 from src.features.usuarios.infrastructure.api.v1.usuarios_router import router as usuarios_router
 from src.features.polizas.infrastructure.api.v1.polizas_router import router as polizas_router
 from src.features.tipos_seguros.infrastructure.api.v1.tipos_seguro_router import router as tipos_seguro_router
+from src.domain.shared.api.v1.monedas_router import router as monedas_router
 
 # Importar inicializadores de datos
 from src.infrastructure.database.init_data import init_tipos_documento, init_usuarios
@@ -51,6 +52,7 @@ app.include_router(sustituciones_corredores_router, prefix=settings.API_V1_STR)
 app.include_router(usuarios_router, prefix=settings.API_V1_STR)
 app.include_router(polizas_router, prefix=settings.API_V1_STR)
 app.include_router(tipos_seguro_router, prefix=settings.API_V1_STR)
+app.include_router(monedas_router, prefix=settings.API_V1_STR)
 
 # Evento de inicio para inicializar datos
 @app.on_event("startup")

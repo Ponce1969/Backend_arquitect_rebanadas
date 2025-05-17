@@ -7,11 +7,11 @@ from pydantic import BaseModel, Field, field_validator
 # Importamos el Enum TipoDuracion del dominio
 from src.features.polizas.domain.types import TipoDuracion
 
-# Importamos DTOs relacionados (asumimos que existen)
+# Importamos DTOs relacionados
 from src.features.clientes.application.dtos import ClienteDto
 from src.features.corredores.application.dtos import CorredorDto
 from src.features.tipos_seguros.application.dtos import TipoSeguroDto
-# from src.domain.shared.dtos import MonedaDto  # Asumimos que existe
+from src.domain.shared.dtos import MonedaDto
 
 
 # DTO para crear una nueva poliza (entrada a EmitirPolizaUseCase)
@@ -49,6 +49,14 @@ class EmitirPolizaCommand(BaseModel):
     def comision_positiva(cls, v):
         if v is not None and v < 0:
             raise ValueError("La comisión no puede ser negativa")
+        return v
+    
+    @field_validator("moneda_id")
+    @classmethod
+    def validate_moneda_required_for_international(cls, v, values):
+        # Si la suma asegurada es alta o hay indicios de póliza internacional, la moneda es obligatoria
+        if "suma_asegurada" in values and values["suma_asegurada"] > 100000 and v is None:
+            raise ValueError("Para pólizas con sumas aseguradas altas, la moneda es obligatoria")
         return v
 
 
@@ -95,7 +103,7 @@ class PolizaDto(BaseModel):
     estado_poliza: str
     forma_pago: Optional[str] = None
     tipo_endoso: Optional[str] = None
-    # moneda: Optional[MonedaDto] = None  # DTO completo de la moneda
+    moneda: Optional[MonedaDto] = None  # DTO completo de la moneda
     suma_asegurada: float
     prima: float
     comision: Optional[float] = None
@@ -137,6 +145,8 @@ class PolizaSummaryDto(BaseModel):
     estado_poliza: str
     suma_asegurada: float
     prima: float
+    moneda_codigo: Optional[str] = None  # Solo el código de la moneda, no el objeto completo
+    moneda_simbolo: Optional[str] = None  # Solo el símbolo de la moneda
     
     # Propiedades calculadas
     @property

@@ -42,11 +42,11 @@ from src.features.polizas.infrastructure.repositories import SQLAlchemyPolizaRep
 from src.features.clientes.infrastructure.repositories import SQLAlchemyClienteRepository
 from src.features.corredores.infrastructure.repositories import SQLAlchemyCorredorRepository
 from src.features.tipos_seguros.infrastructure.repositories import SQLAlchemyTipoSeguroRepository
-# from src.infrastructure.database.repositories import SQLAlchemyMonedaRepository  # Asumimos que existe
+from src.infrastructure.database.repositories import SQLAlchemyMonedaRepository
 
 # Importamos las dependencias de seguridad (para proteger endpoints)
-# from src.infrastructure.security.dependencies import get_current_user, get_admin_user
-# from src.features.usuarios.application.dtos import UsuarioDto
+from src.infrastructure.security.dependencies import get_current_user, get_admin_user, get_corredor_user
+from src.features.usuarios.application.dtos import UsuarioDto
 
 # Creamos el router
 router = APIRouter(prefix="/polizas", tags=["Polizas"])
@@ -56,7 +56,7 @@ router = APIRouter(prefix="/polizas", tags=["Polizas"])
 async def emitir_poliza(
     command: EmitirPolizaCommand,
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden emitir polizas
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden emitir polizas
 ):
     """Emite una nueva póliza."""
     # Inicializamos los repositorios
@@ -64,7 +64,7 @@ async def emitir_poliza(
     cliente_repository = SQLAlchemyClienteRepository(db)
     corredor_repository = SQLAlchemyCorredorRepository(db)
     tipo_seguro_repository = SQLAlchemyTipoSeguroRepository(db)
-    # moneda_repository = SQLAlchemyMonedaRepository(db)
+    moneda_repository = SQLAlchemyMonedaRepository(db)
     
     # Inicializamos el caso de uso
     use_case = EmitirPolizaUseCase(
@@ -72,7 +72,7 @@ async def emitir_poliza(
         cliente_repository,
         corredor_repository,
         tipo_seguro_repository,
-        # moneda_repository
+        moneda_repository
     )
     
     try:
@@ -126,7 +126,7 @@ async def emitir_poliza(
 async def listar_polizas(
     cliente_id: Optional[uuid.UUID] = Query(None, description="ID del cliente para filtrar polizas"),
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar polizas
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar polizas
 ):
     """Lista todas las polizas o filtra por cliente."""
     # Inicializamos el repositorio
@@ -153,7 +153,7 @@ async def listar_polizas(
 async def obtener_poliza(
     poliza_id: int = Path(..., description="ID de la póliza a obtener"),
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver polizas
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver polizas
 ):
     """Obtiene una póliza por su ID."""
     # Inicializamos el repositorio
@@ -182,7 +182,7 @@ async def obtener_poliza_por_numero(
     numero_poliza: str = Path(..., description="Número de la póliza a obtener"),
     carpeta: Optional[str] = Query(None, description="Carpeta de la póliza (opcional)"),
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver polizas
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver polizas
 ):
     """Obtiene una póliza por su número."""
     # Inicializamos el repositorio
@@ -211,7 +211,7 @@ async def actualizar_poliza(
     poliza_id: int = Path(..., description="ID de la póliza a actualizar"),
     command: ActualizarPolizaCommand = None,
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden actualizar polizas
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden actualizar polizas
 ):
     """Actualiza una póliza existente."""
     # Aseguramos que el ID en el path coincida con el ID en el comando
@@ -224,13 +224,13 @@ async def actualizar_poliza(
     # Inicializamos los repositorios
     poliza_repository = SQLAlchemyPolizaRepository(db)
     corredor_repository = SQLAlchemyCorredorRepository(db)
-    # moneda_repository = SQLAlchemyMonedaRepository(db)
+    moneda_repository = SQLAlchemyMonedaRepository(db)
     
     # Inicializamos el caso de uso
     use_case = ActualizarPolizaUseCase(
         poliza_repository,
         corredor_repository,
-        # moneda_repository
+        moneda_repository
     )
     
     try:
@@ -272,7 +272,7 @@ async def actualizar_poliza(
 async def eliminar_poliza(
     poliza_id: int = Path(..., description="ID de la póliza a eliminar"),
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden eliminar polizas
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden eliminar polizas
 ):
     """Elimina una póliza."""
     # Inicializamos el repositorio
