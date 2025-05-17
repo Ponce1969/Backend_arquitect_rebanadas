@@ -1,15 +1,21 @@
 import os
 import sys
 import uvicorn
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
 
+# Configuración del logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Agregar el directorio src al path de Python
 sys.path.append(os.path.abspath('src'))
 
 from src.config.settings import settings
 from src.infrastructure.database import Base, engine, get_db
+from src.domain.shared.exceptions import global_exception_handler, APIError
 
 # Importar routers
 from src.features.aseguradoras.infrastructure.api.v1.aseguradoras_router import router as aseguradoras_router
@@ -19,11 +25,15 @@ from src.features.sustituciones_corredores.infrastructure.api.v1.sustituciones_r
 from src.features.usuarios.infrastructure.api.v1.usuarios_router import router as usuarios_router
 from src.features.polizas.infrastructure.api.v1.polizas_router import router as polizas_router
 from src.features.tipos_seguros.infrastructure.api.v1.tipos_seguro_router import router as tipos_seguro_router
-from src.domain.shared.api.v1.monedas_router import router as monedas_router
+from src.features.monedas.infrastructure.api.v1.monedas_router import router as monedas_router
+from src.features.tipos_documento.infrastructure.api.v1.tipos_documento_router import router as tipos_documento_router
+from src.features.corredores.infrastructure.api.v1.clientes_corredores_router import router as clientes_corredores_router
 
 # Importar inicializadores de datos
-from src.infrastructure.database.init_data import init_tipos_documento, init_usuarios
+from src.features.tipos_documento.infrastructure.init_data import init_tipos_documento
+from src.features.monedas.infrastructure.init_data import init_monedas
 from src.features.corredores.infrastructure.init_data import init_corredores
+from src.infrastructure.database.init_data.usuarios import init_usuarios
 
 # Crear tablas en la base de datos
 Base.metadata.create_all(bind=engine)
@@ -33,6 +43,11 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
+
+# Configurar manejadores de excepciones
+app.add_exception_handler(APIError, global_exception_handler)
+app.add_exception_handler(RequestValidationError, global_exception_handler)
+app.add_exception_handler(Exception, global_exception_handler)
 
 # Configurar CORS
 if settings.BACKEND_CORS_ORIGINS:
@@ -53,22 +68,54 @@ app.include_router(usuarios_router, prefix=settings.API_V1_STR)
 app.include_router(polizas_router, prefix=settings.API_V1_STR)
 app.include_router(tipos_seguro_router, prefix=settings.API_V1_STR)
 app.include_router(monedas_router, prefix=settings.API_V1_STR)
+app.include_router(tipos_documento_router, prefix=settings.API_V1_STR)
+app.include_router(clientes_corredores_router, prefix=settings.API_V1_STR)
 
-# Evento de inicio para inicializar datos
+# Configuración del ciclo de vida de la aplicación (eventos startup y shutdown)
 @app.on_event("startup")
 async def startup_event():
+    logger.info("Iniciando aplicación...")
+    
+    # Crear tablas en la base de datos si no existen
+    try:
+        logger.info("Creando tablas en la base de datos si no existen...")
+        Base.metadata.create_all(bind=engine)
+        logger.info("Tablas creadas correctamente")
+    except Exception as e:
+        logger.error(f"Error al crear tablas: {str(e)}")
+        # No lanzamos la excepción para permitir que la aplicación inicie
+    
+    # Inicializar datos
     db = next(get_db())
     try:
+        logger.info("Inicializando datos...")
+        
         # Inicializar tipos de documento
         init_tipos_documento(db)
+        logger.info("Tipos de documento inicializados correctamente")
+        
+        # Inicializar monedas
+        init_monedas(db)
+        logger.info("Monedas inicializadas correctamente")
+        
         # Inicializar corredores
         init_corredores(db)
+        logger.info("Corredores inicializados correctamente")
+        
         # Inicializar usuarios
         init_usuarios(db)
+        logger.info("Usuarios inicializados correctamente")
+        
+        logger.info("Todos los datos inicializados correctamente")
     except Exception as e:
-        print(f"Error al inicializar datos: {e}")
+        logger.error(f"Error al inicializar datos: {str(e)}")
+        # Capturamos la excepción para que la aplicación pueda iniciar aún con errores
     finally:
         db.close()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info("Cerrando la aplicación...")
 
 
 @app.get("/")

@@ -1,35 +1,113 @@
-class MonedaException(Exception):
-    """Excepción base para todas las excepciones relacionadas con Moneda."""
-    pass
+from fastapi import status
+from fastapi.responses import JSONResponse
 
+# Excepciones base para toda la aplicación
+class APIError(Exception):
+    """Excepción base para todos los errores de la API"""
+    def __init__(self, status_code: int, message: str, details: dict = None):
+        self.status_code = status_code
+        self.message = message
+        self.details = details or {}
 
-class MonedaNotFoundException(MonedaException):
-    """Excepción lanzada cuando no se encuentra una moneda."""
+class NotFoundError(APIError):
+    """Excepción para recursos no encontrados"""
+    def __init__(self, resource: str, details: dict = None):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND,
+            message=f"{resource} no encontrado",
+            details=details
+        )
+
+class ValidationError(APIError):
+    """Excepción para errores de validación"""
+    def __init__(self, details: dict = None):
+        super().__init__(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            message="Error de validación",
+            details=details
+        )
+
+class UnauthorizedError(APIError):
+    """Excepción para errores de autenticación"""
+    def __init__(self, message: str = "No autorizado", details: dict = None):
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            message=message,
+            details=details
+        )
+
+class ForbiddenError(APIError):
+    """Excepción para errores de permisos"""
+    def __init__(self, message: str = "Acceso denegado", details: dict = None):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            message=message,
+            details=details
+        )
+
+class ConflictError(APIError):
+    """Excepción para conflictos de datos"""
+    def __init__(self, message: str, details: dict = None):
+        super().__init__(
+            status_code=status.HTTP_409_CONFLICT,
+            message=message,
+            details=details
+        )
+
+# Compatibilidad con excepciones existentes
+from src.features.monedas.domain.exceptions import (
+    MonedaException,
+    MonedaNotFoundException,
+    MonedaInvalidaException,
+    MonedaCodigoExistsException
+)
+
+from src.features.tipos_documento.domain.exceptions import (
+    TipoDocumentoException,
+    TipoDocumentoNotFoundException,
+    TipoDocumentoInvalidoException,
+    TipoDocumentoCodigoExistsException,
+    TipoDocumentoDefaultException
+)
+
+# Manejador global de excepciones
+async def global_exception_handler(request, exc: Exception) -> JSONResponse:
+    """Manejador global de excepciones para la aplicación"""
+    if isinstance(exc, APIError):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": {
+                    "message": exc.message,
+                    "details": exc.details
+                }
+            }
+        )
     
-    def __init__(self, moneda_id=None, codigo=None):
-        if moneda_id:
-            self.message = f"No se encontró la moneda con ID: {moneda_id}"
-        elif codigo:
-            self.message = f"No se encontró la moneda con código: {codigo}"
-        else:
-            self.message = "No se encontró la moneda especificada"
-        super().__init__(self.message)
-
-
-class MonedaInvalidaException(MonedaException):
-    """Excepción lanzada cuando se proporciona una moneda inválida."""
+    # Manejo de errores de validación de Pydantic
+    if hasattr(exc, "status_code") and exc.status_code == 422:
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": {
+                    "message": "Error de validación",
+                    "details": {
+                        "errors": exc.errors() if hasattr(exc, "errors") else str(exc)
+                    }
+                }
+            }
+        )
     
-    def __init__(self, codigo=None):
-        if codigo:
-            self.message = f"La moneda con código '{codigo}' no es válida o está inactiva"
-        else:
-            self.message = "La moneda especificada no es válida o está inactiva"
-        super().__init__(self.message)
-
-
-class MonedaCodigoExistsException(MonedaException):
-    """Excepción lanzada cuando se intenta crear una moneda con un código que ya existe."""
+    # Manejo de errores inesperados
+    import logging
+    logging.exception("Error inesperado")
     
-    def __init__(self, codigo):
-        self.message = f"Ya existe una moneda con el código: {codigo}"
-        super().__init__(self.message)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={
+            "error": {
+                "message": "Error interno del servidor",
+                "details": {}
+            }
+        }
+    )

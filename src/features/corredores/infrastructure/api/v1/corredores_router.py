@@ -22,6 +22,8 @@ from src.features.corredores.application.use_cases import (
 )
 from src.features.corredores.infrastructure.repositories import SQLAlchemyCorredorRepository
 from src.infrastructure.database import get_db
+from src.infrastructure.security.dependencies import get_current_user, get_admin_user
+from src.features.usuarios.application.dtos import UsuarioDto
 
 # Crear el router para corredores
 router = APIRouter(
@@ -34,7 +36,8 @@ router = APIRouter(
 @router.post("/", response_model=CorredorDto, status_code=status.HTTP_201_CREATED)
 def crear_corredor(
     corredor: CorredorCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden crear corredores
 ):
     """Crea un nuevo corredor."""
     repository = SQLAlchemyCorredorRepository(db)
@@ -52,7 +55,8 @@ def crear_corredor(
 @router.get("/{corredor_id}", response_model=CorredorDto)
 def obtener_corredor_por_id(
     corredor_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver corredores
 ):
     """Obtiene un corredor por su ID técnico."""
     repository = SQLAlchemyCorredorRepository(db)
@@ -71,7 +75,8 @@ def obtener_corredor_por_id(
 @router.get("/numero/{numero}", response_model=CorredorDto)
 def obtener_corredor_por_numero(
     numero: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver corredores
 ):
     """Obtiene un corredor por su número (identificador de negocio)."""
     repository = SQLAlchemyCorredorRepository(db)
@@ -90,7 +95,8 @@ def obtener_corredor_por_numero(
 @router.get("/documento/{documento}", response_model=CorredorDto)
 def obtener_corredor_por_documento(
     documento: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver corredores
 ):
     """Obtiene un corredor por su número de documento."""
     repository = SQLAlchemyCorredorRepository(db)
@@ -109,7 +115,8 @@ def obtener_corredor_por_documento(
 @router.get("/email/{email}", response_model=CorredorDto)
 def obtener_corredor_por_email(
     email: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver corredores
 ):
     """Obtiene un corredor por su dirección de correo electrónico."""
     repository = SQLAlchemyCorredorRepository(db)
@@ -127,7 +134,8 @@ def obtener_corredor_por_email(
 
 @router.get("/", response_model=List[CorredorDto])
 def listar_corredores(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar corredores
 ):
     """Lista todos los corredores."""
     repository = SQLAlchemyCorredorRepository(db)
@@ -136,11 +144,12 @@ def listar_corredores(
     return use_case.execute()
 
 
-@router.put("/{numero}", response_model=CorredorDto)
+@router.put("/numero/{numero}", response_model=CorredorDto)
 def actualizar_corredor(
     numero: int,
     corredor_data: CorredorUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden actualizar corredores
 ):
     """Actualiza un corredor existente."""
     repository = SQLAlchemyCorredorRepository(db)
@@ -165,7 +174,8 @@ def actualizar_corredor(
 @router.delete("/{corredor_id}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_corredor(
     corredor_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden eliminar corredores
 ):
     """Elimina un corredor por su ID técnico."""
     repository = SQLAlchemyCorredorRepository(db)
@@ -179,11 +189,12 @@ def eliminar_corredor(
         )
 
 
-@router.get("/search/", response_model=List[CorredorDto])
+@router.get("/buscar/", response_model=List[CorredorDto])
 def buscar_corredores(
     query: Optional[str] = Query(None, description="Término de búsqueda para filtrar corredores"),
     esta_activo: Optional[bool] = Query(None, description="Filtrar por estado activo/inactivo"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden buscar corredores
 ):
     """Busca corredores según criterios específicos."""
     repository = SQLAlchemyCorredorRepository(db)

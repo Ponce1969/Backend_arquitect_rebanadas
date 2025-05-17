@@ -29,9 +29,9 @@ from src.features.tipos_seguros.application.use_cases import (
 from src.features.tipos_seguros.infrastructure.repositories import SQLAlchemyTipoSeguroRepository
 from src.features.aseguradoras.infrastructure.repositories import SQLAlchemyAseguradoraRepository
 
-# Importamos las dependencias de seguridad (para proteger endpoints)
-# from src.infrastructure.security.dependencies import get_current_user, get_admin_user
-# from src.features.usuarios.application.dtos import UsuarioDto
+# Importamos las dependencias de seguridad
+from src.infrastructure.security.dependencies import get_current_user, get_admin_user
+from src.features.usuarios.application.dtos import UsuarioDto
 
 # Creamos el router
 router = APIRouter(prefix="/tipos-seguro", tags=["Tipos de Seguro"])
@@ -41,7 +41,7 @@ router = APIRouter(prefix="/tipos-seguro", tags=["Tipos de Seguro"])
 async def crear_tipo_seguro(
     command: CreateTipoSeguroCommand,
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden crear tipos de seguro
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden crear tipos de seguro
 ):
     """Crea un nuevo tipo de seguro."""
     # Inicializamos los repositorios
@@ -75,7 +75,7 @@ async def crear_tipo_seguro(
 async def listar_tipos_seguro(
     aseguradora_id: Optional[int] = Query(None, description="ID de la aseguradora para filtrar tipos de seguro"),
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar tipos de seguro
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar tipos de seguro
 ):
     """Lista todos los tipos de seguro o filtra por aseguradora."""
     # Inicializamos el repositorio
@@ -102,7 +102,7 @@ async def listar_tipos_seguro(
 async def obtener_tipo_seguro(
     tipo_seguro_id: int = Path(..., description="ID del tipo de seguro a obtener"),
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver tipos de seguro
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver tipos de seguro
 ):
     """Obtiene un tipo de seguro por su ID."""
     # Inicializamos el repositorio
@@ -127,7 +127,7 @@ async def obtener_tipo_seguro(
 async def obtener_tipo_seguro_por_codigo(
     codigo: str = Path(..., description="Código del tipo de seguro a obtener"),
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver tipos de seguro
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver tipos de seguro
 ):
     """Obtiene un tipo de seguro por su código."""
     # Inicializamos el repositorio
@@ -153,7 +153,7 @@ async def actualizar_tipo_seguro(
     tipo_seguro_id: int = Path(..., description="ID del tipo de seguro a actualizar"),
     command: UpdateTipoSeguroCommand = None,
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden actualizar tipos de seguro
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden actualizar tipos de seguro
 ):
     """Actualiza un tipo de seguro existente."""
     # Aseguramos que el ID en el path coincida con el ID en el comando
@@ -194,7 +194,7 @@ async def actualizar_tipo_seguro(
 async def eliminar_tipo_seguro(
     tipo_seguro_id: int = Path(..., description="ID del tipo de seguro a eliminar"),
     db: Session = Depends(get_db),
-    # current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden eliminar tipos de seguro
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden eliminar tipos de seguro
 ):
     """Elimina un tipo de seguro."""
     # Inicializamos el repositorio

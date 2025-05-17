@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.domain.shared.custom_types import Role
+from src.features.usuarios.domain.types import Role
 from src.features.usuarios.domain.entities import Usuario
 from src.features.usuarios.infrastructure.models import Usuario as UsuarioModel
 from src.infrastructure.security.password import PasswordHelper

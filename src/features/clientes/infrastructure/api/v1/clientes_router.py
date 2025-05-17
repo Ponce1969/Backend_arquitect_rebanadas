@@ -29,13 +29,17 @@ from src.features.clientes.domain.exceptions import (
 )
 from src.features.clientes.infrastructure.repositories import SQLAlchemyClienteRepository
 from src.infrastructure.database import get_db
+from src.infrastructure.security.dependencies import get_current_user, get_admin_user
+from src.features.usuarios.application.dtos import UsuarioDto
 
 router = APIRouter(prefix="/clientes", tags=["clientes"])
 
 
 @router.post("/", response_model=ClienteResponse, status_code=status.HTTP_201_CREATED)
 def crear_cliente(
-    cliente: ClienteCreate, db: Session = Depends(get_db)
+    cliente: ClienteCreate, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden crear clientes
 ) -> ClienteResponse:
     """Crea un nuevo cliente."""
     try:
@@ -56,7 +60,11 @@ def crear_cliente(
 
 
 @router.get("/{cliente_id}", response_model=ClienteResponse)
-def obtener_cliente(cliente_id: UUID, db: Session = Depends(get_db)) -> ClienteResponse:
+def obtener_cliente(
+    cliente_id: UUID, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver clientes
+) -> ClienteResponse:
     """Obtiene un cliente por su ID."""
     try:
         repository = SQLAlchemyClienteRepository(db)
@@ -76,7 +84,9 @@ def obtener_cliente(cliente_id: UUID, db: Session = Depends(get_db)) -> ClienteR
 
 @router.get("/numero/{numero_cliente}", response_model=ClienteResponse)
 def obtener_cliente_por_numero(
-    numero_cliente: int, db: Session = Depends(get_db)
+    numero_cliente: int, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver clientes
 ) -> ClienteResponse:
     """Obtiene un cliente por su número de cliente."""
     try:
@@ -97,7 +107,9 @@ def obtener_cliente_por_numero(
 
 @router.get("/documento/{numero_documento}", response_model=ClienteResponse)
 def obtener_cliente_por_documento(
-    numero_documento: str, db: Session = Depends(get_db)
+    numero_documento: str, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver clientes
 ) -> ClienteResponse:
     """Obtiene un cliente por su número de documento."""
     try:
@@ -116,9 +128,12 @@ def obtener_cliente_por_documento(
         )
 
 
-@router.get("/documento/tipo/{tipo_documento_id}/numero/{numero_documento}", response_model=ClienteResponse)
+@router.get("/tipo-documento/{tipo_documento_id}/documento/{numero_documento}", response_model=ClienteResponse)
 def obtener_cliente_por_tipo_y_numero_documento(
-    tipo_documento_id: int, numero_documento: str, db: Session = Depends(get_db)
+    tipo_documento_id: int, 
+    numero_documento: str, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver clientes
 ) -> ClienteResponse:
     """Obtiene un cliente por su tipo y número de documento."""
     try:
@@ -158,7 +173,8 @@ def obtener_cliente_por_tipo_y_numero_documento(
 @router.get("/", response_model=list[ClienteResponse])
 def listar_clientes(
     query: str | None = Query(None, description="Término de búsqueda"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar clientes
 ) -> list[ClienteResponse]:
     """Lista todos los clientes o busca por término."""
     try:
@@ -180,12 +196,13 @@ def listar_clientes(
         )
 
 
-@router.get("/search/", response_model=list[ClienteResponse])
+@router.get("/buscar/", response_model=list[ClienteResponse])
 def buscar_clientes(
     query: str | None = Query(None, description="Término de búsqueda en nombres, apellidos, documento o email"),
     tipo_documento_id: int | None = Query(None, description="ID del tipo de documento"),
     localidad: str | None = Query(None, description="Localidad del cliente"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden buscar clientes
 ) -> list[ClienteResponse]:
     """Busca clientes según criterios específicos.
     
@@ -209,7 +226,10 @@ def buscar_clientes(
 
 @router.put("/{cliente_id}", response_model=ClienteResponse)
 def actualizar_cliente(
-    cliente_id: UUID, cliente: ClienteUpdate, db: Session = Depends(get_db)
+    cliente_id: UUID, 
+    cliente: ClienteUpdate, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden actualizar clientes
 ) -> ClienteResponse:
     """Actualiza un cliente existente."""
     try:
@@ -235,7 +255,11 @@ def actualizar_cliente(
 
 
 @router.delete("/{cliente_id}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar_cliente(cliente_id: UUID, db: Session = Depends(get_db)) -> None:
+def eliminar_cliente(
+    cliente_id: UUID, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden eliminar clientes
+) -> None:
     """Elimina un cliente."""
     try:
         repository = SQLAlchemyClienteRepository(db)

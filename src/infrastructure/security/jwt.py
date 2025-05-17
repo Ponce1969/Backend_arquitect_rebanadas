@@ -1,8 +1,17 @@
 from datetime import datetime, timedelta
 from typing import Any
 
-import jwt
-from jwt.exceptions import PyJWTError
+# Intentamos importar PyJWT de diferentes formas para mayor compatibilidad
+try:
+    import jwt
+    from jwt.exceptions import PyJWTError
+except ImportError:
+    try:
+        import PyJWT as jwt
+        from jwt.exceptions import PyJWTError
+    except ImportError:
+        from python_jose import jwt
+        from python_jose.exceptions import JWTError as PyJWTError
 
 from src.config.settings import settings
 

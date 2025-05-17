@@ -1,9 +1,11 @@
 from sqlalchemy.orm import Session
 
-from src.domain.shared.entities import Moneda as MonedaEntity, TipoDocumento as TipoDocumentoEntity
-from src.domain.shared.exceptions import MonedaNotFoundException, MonedaInvalidaException, MonedaCodigoExistsException
+from src.features.monedas.domain.entities import Moneda as MonedaEntity
+from src.features.monedas.domain.exceptions import MonedaNotFoundException, MonedaInvalidaException, MonedaCodigoExistsException
+from src.features.tipos_documento.domain.entities import TipoDocumento as TipoDocumentoEntity
 from src.infrastructure.cache import cached, clear_cache
-from src.infrastructure.database.models import Moneda, TipoDocumento
+from src.features.monedas.infrastructure.models import Moneda
+from src.features.tipos_documento.infrastructure.models import TipoDocumento
 
 
 class SQLAlchemyMonedaRepository:

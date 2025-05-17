@@ -23,13 +23,17 @@ from src.features.aseguradoras.domain.exceptions import (
 )
 from src.features.aseguradoras.infrastructure.repositories import SQLAlchemyAseguradoraRepository
 from src.infrastructure.database import get_db
+from src.infrastructure.security.dependencies import get_current_user, get_admin_user
+from src.features.usuarios.application.dtos import UsuarioDto
 
 router = APIRouter(prefix="/aseguradoras", tags=["aseguradoras"])
 
 
 @router.post("/", response_model=AseguradoraResponse, status_code=status.HTTP_201_CREATED)
 def crear_aseguradora(
-    aseguradora: AseguradoraCreate, db: Session = Depends(get_db)
+    aseguradora: AseguradoraCreate, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden crear aseguradoras
 ) -> AseguradoraResponse:
     """Crea una nueva aseguradora."""
     try:
@@ -50,7 +54,11 @@ def crear_aseguradora(
 
 
 @router.get("/{aseguradora_id}", response_model=AseguradoraResponse)
-def obtener_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> AseguradoraResponse:
+def obtener_aseguradora(
+    aseguradora_id: int, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver aseguradoras
+) -> AseguradoraResponse:
     """Obtiene una aseguradora por su ID."""
     try:
         repository = SQLAlchemyAseguradoraRepository(db)
@@ -69,7 +77,10 @@ def obtener_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> A
 
 
 @router.get("/", response_model=list[AseguradoraResponse])
-def listar_aseguradoras(db: Session = Depends(get_db)) -> list[AseguradoraResponse]:
+def listar_aseguradoras(
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar aseguradoras
+) -> list[AseguradoraResponse]:
     """Lista todas las aseguradoras."""
     repository = SQLAlchemyAseguradoraRepository(db)
     use_case = ListarAseguradorasUseCase(repository)
@@ -78,7 +89,10 @@ def listar_aseguradoras(db: Session = Depends(get_db)) -> list[AseguradoraRespon
 
 @router.put("/{aseguradora_id}", response_model=AseguradoraResponse)
 def actualizar_aseguradora(
-    aseguradora_id: int, aseguradora: AseguradoraUpdate, db: Session = Depends(get_db)
+    aseguradora_id: int, 
+    aseguradora: AseguradoraUpdate, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden actualizar aseguradoras
 ) -> AseguradoraResponse:
     """Actualiza una aseguradora existente."""
     try:
@@ -104,7 +118,11 @@ def actualizar_aseguradora(
 
 
 @router.delete("/{aseguradora_id}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> None:
+def eliminar_aseguradora(
+    aseguradora_id: int, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden eliminar aseguradoras
+) -> None:
     """Elimina una aseguradora."""
     try:
         repository = SQLAlchemyAseguradoraRepository(db)
@@ -122,9 +140,12 @@ def eliminar_aseguradora(aseguradora_id: int, db: Session = Depends(get_db)) -> 
         )
 
 
-@router.get("/search/", response_model=list[AseguradoraResponse])
+@router.get("/buscar/", response_model=list[AseguradoraResponse])
 def buscar_aseguradoras(
-    query: str = None, esta_activa: bool = None, db: Session = Depends(get_db)
+    query: str = None, 
+    esta_activa: bool = None, 
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden buscar aseguradoras
 ) -> list[AseguradoraResponse]:
     """Busca aseguradoras según criterios específicos.
     

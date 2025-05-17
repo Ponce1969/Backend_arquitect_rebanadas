@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.infrastructure.database.models import TipoDocumento
+from src.features.tipos_documento.infrastructure.models import TipoDocumento
 
 
 def init_tipos_documento(db: Session):

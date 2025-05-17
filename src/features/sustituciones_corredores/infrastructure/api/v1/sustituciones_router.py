@@ -32,6 +32,8 @@ from src.features.sustituciones_corredores.application.use_cases import (
 )
 from src.features.sustituciones_corredores.infrastructure.repositories import SQLAlchemySustitucionCorredorRepository
 from src.infrastructure.database import get_db
+from src.infrastructure.security.dependencies import get_current_user, get_admin_user
+from src.features.usuarios.application.dtos import UsuarioDto
 
 
 # Crear el router para sustituciones de corredores
@@ -45,7 +47,8 @@ router = APIRouter(
 @router.post("/", response_model=SustitucionCorredorResponse, status_code=status.HTTP_201_CREATED)
 def crear_sustitucion_corredor(
     sustitucion: SustitucionCorredorCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden crear sustituciones
 ) -> SustitucionCorredorResponse:
     """Crea una nueva sustitución de corredor."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -68,7 +71,8 @@ def crear_sustitucion_corredor(
 @router.get("/{sustitucion_id}", response_model=SustitucionCorredorResponse)
 def obtener_sustitucion_corredor(
     sustitucion_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver sustituciones
 ) -> SustitucionCorredorResponse:
     """Obtiene una sustitución de corredor por su ID."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -86,7 +90,8 @@ def obtener_sustitucion_corredor(
 
 @router.get("/", response_model=list[SustitucionCorredorResponse])
 def listar_sustituciones_corredores(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar sustituciones
 ) -> list[SustitucionCorredorResponse]:
     """Lista todas las sustituciones de corredores."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -98,7 +103,8 @@ def listar_sustituciones_corredores(
 @router.get("/activas", response_model=list[SustitucionCorredorResponse])
 def listar_sustituciones_activas(
     fecha: date | None = Query(None, description="Fecha para verificar sustituciones activas (por defecto, fecha actual)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden listar sustituciones activas
 ) -> list[SustitucionCorredorResponse]:
     """Lista todas las sustituciones activas en la fecha especificada."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -110,7 +116,8 @@ def listar_sustituciones_activas(
 @router.get("/corredor-ausente/{corredor_numero}", response_model=list[SustitucionCorredorResponse])
 def obtener_sustituciones_por_corredor_ausente(
     corredor_numero: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver sustituciones
 ) -> list[SustitucionCorredorResponse]:
     """Obtiene todas las sustituciones donde el corredor especificado está ausente."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -122,7 +129,8 @@ def obtener_sustituciones_por_corredor_ausente(
 @router.get("/corredor-sustituto/{corredor_numero}", response_model=list[SustitucionCorredorResponse])
 def obtener_sustituciones_por_corredor_sustituto(
     corredor_numero: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver sustituciones
 ) -> list[SustitucionCorredorResponse]:
     """Obtiene todas las sustituciones donde el corredor especificado es sustituto."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -135,7 +143,8 @@ def obtener_sustituciones_por_corredor_sustituto(
 def obtener_sustituciones_activas_por_corredor_ausente(
     corredor_numero: int,
     fecha: date | None = Query(None, description="Fecha para verificar sustituciones activas (por defecto, fecha actual)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver sustituciones
 ) -> list[SustitucionCorredorResponse]:
     """Obtiene las sustituciones activas donde el corredor especificado está ausente."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -148,7 +157,8 @@ def obtener_sustituciones_activas_por_corredor_ausente(
 def obtener_sustituciones_activas_por_corredor_sustituto(
     corredor_numero: int,
     fecha: date | None = Query(None, description="Fecha para verificar sustituciones activas (por defecto, fecha actual)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden ver sustituciones
 ) -> list[SustitucionCorredorResponse]:
     """Obtiene las sustituciones activas donde el corredor especificado es sustituto."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -161,7 +171,8 @@ def obtener_sustituciones_activas_por_corredor_sustituto(
 def actualizar_sustitucion_corredor(
     sustitucion_id: int,
     sustitucion_data: SustitucionCorredorUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden actualizar sustituciones
 ) -> SustitucionCorredorResponse:
     """Actualiza una sustitución de corredor existente."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -189,7 +200,8 @@ def actualizar_sustitucion_corredor(
 @router.delete("/{sustitucion_id}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_sustitucion_corredor(
     sustitucion_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_admin_user)  # Solo administradores pueden eliminar sustituciones
 ) -> None:
     """Elimina una sustitución de corredor por su ID."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
@@ -208,7 +220,8 @@ def eliminar_sustitucion_corredor(
 def finalizar_sustitucion_corredor(
     sustitucion_id: int,
     request: FinalizarSustitucionRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: UsuarioDto = Depends(get_current_user)  # Solo usuarios autenticados pueden finalizar sustituciones
 ) -> SustitucionCorredorResponse:
     """Finaliza una sustitución de corredor estableciendo su fecha de fin y cambiando su estado a inactiva."""
     repository = SQLAlchemySustitucionCorredorRepository(db)
