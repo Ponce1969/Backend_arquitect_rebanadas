@@ -13,33 +13,66 @@ class ICorredorRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_id(self, corredor_id: int) -> Corredor | None:
-        """Obtiene un corredor por su ID técnico."""
+    def get_by_id(self, corredor_id: int) -> tuple[Corredor | None, int | None]:
+        """Obtiene un corredor por su ID técnico.
+        
+        Returns:
+            Tupla con la entidad de dominio y el ID técnico
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_numero(self, numero: int) -> Corredor | None:
-        """Obtiene un corredor por su número (identificador de negocio)."""
+    def get_by_numero(self, numero: int) -> tuple[Corredor | None, int | None]:
+        """Obtiene un corredor por su número (identificador de negocio).
+        
+        Returns:
+            Tupla con la entidad de dominio y el ID técnico
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_documento(self, documento: str) -> Corredor | None:
-        """Obtiene un corredor por su número de documento."""
+    def get_by_documento(self, documento: str) -> tuple[Corredor | None, int | None]:
+        """Obtiene un corredor por su número de documento.
+        
+        Returns:
+            Tupla con la entidad de dominio y el ID técnico
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_by_email(self, email: str) -> Corredor | None:
-        """Obtiene un corredor por su dirección de correo electrónico."""
+    def get_by_email(self, email: str) -> tuple[Corredor | None, int | None]:
+        """Obtiene un corredor por su dirección de correo electrónico.
+        
+        Returns:
+            Tupla con la entidad de dominio y el ID técnico
+        """
+        raise NotImplementedError
+        
+    @abc.abstractmethod
+    def get_ultimo_corredor(self) -> Corredor | None:
+        """Obtiene el último corredor registrado por número de corredor.
+        
+        Returns:
+            La entidad de dominio del último corredor o None si no hay corredores
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_all(self) -> list[Corredor]:
-        """Obtiene todos los corredores."""
+    def get_all(self) -> list[tuple[Corredor, int]]:
+        """Obtiene todos los corredores.
+        
+        Returns:
+            Lista de tuplas con la entidad de dominio y el ID técnico
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def update(self, corredor: Corredor):
-        """Actualiza un corredor existente."""
+    def update(self, corredor: Corredor) -> tuple[Corredor, int]:
+        """Actualiza un corredor existente.
+        
+        Returns:
+            Tupla con la entidad de dominio actualizada y el ID técnico
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -48,8 +81,12 @@ class ICorredorRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def search(self, query: str = None, esta_activo: bool = None) -> list[Corredor]:
-        """Busca corredores según criterios específicos."""
+    def search(self, query: str = None, esta_activo: bool = None) -> list[tuple[Corredor, int]]:
+        """Busca corredores según criterios específicos.
+        
+        Returns:
+            Lista de tuplas con la entidad de dominio y el ID técnico
+        """
         raise NotImplementedError
 
 
