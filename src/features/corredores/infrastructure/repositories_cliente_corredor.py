@@ -14,7 +14,6 @@ from src.features.corredores.domain.exceptions import (
     FechaAsignacionInvalidaException
 )
 from src.features.corredores.application.interfaces.repositories import IClienteCorredorRepository
-from src.features.corredores.infrastructure.models import Corredor
 
 
 class SQLAlchemyClienteCorredorRepository(IClienteCorredorRepository):

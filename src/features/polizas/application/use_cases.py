@@ -1,5 +1,4 @@
 import uuid
-from datetime import date
 from typing import List, Optional
 
 # Importamos las interfaces de los repositorios
@@ -21,8 +20,7 @@ from src.features.polizas.domain.exceptions import (
     PolizaNumeroExistsException,
     ClienteNotFoundException,
     CorredorNotFoundException,
-    TipoSeguroNotFoundException,
-    MonedaNotFoundException
+    TipoSeguroNotFoundException
 )
 
 

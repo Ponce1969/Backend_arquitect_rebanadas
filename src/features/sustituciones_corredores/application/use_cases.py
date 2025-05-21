@@ -11,9 +11,7 @@ from .interfaces.repositories import AbstractSustitucionCorredorRepository
 from ..domain.entities import SustitucionCorredor as SustitucionCorredorDomain
 from ..domain.exceptions import (
     SustitucionCorredorNotFoundException,
-    SustitucionCorredorSolapamientoException,
-    CorredorAusenteNotFoundException,
-    CorredorSustitutoNotFoundException
+    SustitucionCorredorSolapamientoException
 )
 
 

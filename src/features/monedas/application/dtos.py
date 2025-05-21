@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, Dict, Any
 
-from pydantic import BaseModel, Field, field_validator, model_validator, ValidationInfo
+from pydantic import BaseModel, Field, field_validator, model_validator
 from src.features.monedas.application.validators.moneda_validators import MonedaValidators
 from src.domain.shared.exceptions import ValidationError
 

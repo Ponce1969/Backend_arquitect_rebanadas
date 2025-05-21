@@ -55,20 +55,7 @@ class ConflictError(APIError):
         )
 
 # Compatibilidad con excepciones existentes
-from src.features.monedas.domain.exceptions import (
-    MonedaException,
-    MonedaNotFoundException,
-    MonedaInvalidaException,
-    MonedaCodigoExistsException
-)
 
-from src.features.tipos_documento.domain.exceptions import (
-    TipoDocumentoException,
-    TipoDocumentoNotFoundException,
-    TipoDocumentoInvalidoException,
-    TipoDocumentoCodigoExistsException,
-    TipoDocumentoDefaultException
-)
 
 # Manejador global de excepciones
 async def global_exception_handler(request, exc: Exception) -> JSONResponse:

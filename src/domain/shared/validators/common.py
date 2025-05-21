@@ -1,8 +1,6 @@
 import re
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
-from pydantic import field_validator
-from pydantic_core import PydanticCustomError
 
 
 def validate_codigo(value: str, field_name: str = "codigo") -> str:

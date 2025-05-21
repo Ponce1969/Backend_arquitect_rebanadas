@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
@@ -51,7 +51,7 @@ class Usuario:
         return True
 
     # Métodos de negocio relacionados con un Usuario
-    def is_active(self) -> bool:
+    def esta_activo(self) -> bool:
         """
         Verifica si el usuario está activo y no bloqueado.
         

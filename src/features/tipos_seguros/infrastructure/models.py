@@ -9,7 +9,6 @@ from src.infrastructure.database.base import Base
 # Importamos la Entidad de Dominio TipoSeguro para mapear
 from src.features.tipos_seguros.domain.entities import TipoSeguro as TipoSeguroEntity
 # Importamos la Entidad de Dominio Aseguradora para mapear
-from src.features.aseguradoras.domain.entities import Aseguradora as AseguradoraEntity
 
 
 # Definición de la función helper para el tiempo

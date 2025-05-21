@@ -6,11 +6,10 @@ Este módulo proporciona una implementación concreta del repositorio abstracto 
 utilizando SQLAlchemy como ORM para interactuar con la base de datos.
 """
 from datetime import datetime, timezone
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 
-from sqlalchemy.exc import IntegrityError, NoResultFound, SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import or_
 
 from src.features.usuarios.application.interfaces.repositories import AbstractUsuarioRepository
 from src.features.usuarios.domain.entities import Usuario as UsuarioEntity

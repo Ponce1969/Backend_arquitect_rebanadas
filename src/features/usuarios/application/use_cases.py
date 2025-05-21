@@ -1,8 +1,7 @@
 
 
 # Importamos la utilidad de hashing de contraseñas
-from datetime import datetime
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 from src.infrastructure.security.password import Argon2PasswordHelper as PasswordHelper
 
@@ -13,7 +12,6 @@ from .dtos import (
     CambiarContrasenaCommand,
     LoginCommand,
     RegistroUsuarioCommand,
-    TokenDto,
     UsuarioDto,
 )
 from .interfaces.repositories import AbstractUsuarioRepository

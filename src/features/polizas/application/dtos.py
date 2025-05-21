@@ -1,8 +1,8 @@
 from datetime import date
-from typing import Optional, List
+from typing import Optional
 import uuid
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, field_validator
 
 # Importamos el Enum TipoDuracion del dominio
 from src.features.polizas.domain.types import TipoDuracion

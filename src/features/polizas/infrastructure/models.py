@@ -1,5 +1,3 @@
-import enum
-from datetime import date
 
 from sqlalchemy import Column, Date, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -9,9 +7,6 @@ from sqlalchemy.orm import relationship
 from src.infrastructure.database import Base
 
 # Importamos Modelos SQLAlchemy relacionados
-from src.features.clientes.infrastructure.models import Cliente as ClienteModel
-from src.features.corredores.infrastructure.models import Corredor as CorredorModel
-from src.features.tipos_seguros.infrastructure.models import TipoSeguro as TipoSeguroModel
 # Asumimos que existe un modelo Moneda en la infraestructura compartida
 # from src.features.monedas.infrastructure.models import Moneda as MonedaModel
 

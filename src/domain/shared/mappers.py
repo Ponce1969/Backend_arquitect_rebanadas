@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, List, Optional, Type
+from typing import TypeVar, Generic, List
 
 # Definición de tipos genéricos para entidades y modelos
 T = TypeVar('T')  # Tipo para entidades de dominio

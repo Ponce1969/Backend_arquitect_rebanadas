@@ -1,7 +1,5 @@
 from sqlalchemy.orm import Session
 
-from src.features.usuarios.domain.types import Role
-from src.features.usuarios.domain.entities import Usuario
 from src.features.usuarios.infrastructure.models import Usuario as UsuarioModel
 from src.infrastructure.security.password import Argon2PasswordHelper
 

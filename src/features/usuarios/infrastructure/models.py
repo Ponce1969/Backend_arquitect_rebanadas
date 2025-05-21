@@ -5,11 +5,10 @@ Este módulo contiene las definiciones de los modelos SQLAlchemy utilizados
 para interactuar con la base de datos en el contexto de usuarios.
 """
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Dict, Any, Type, TypeVar, cast
+from typing import Optional, Dict, Any, Type, TypeVar
 
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, event
-from sqlalchemy.orm import relationship, Session
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import relationship
 
 from src.config.settings import settings
 from src.features.usuarios.domain.types import Role

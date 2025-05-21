@@ -1,4 +1,3 @@
-from src.features.monedas.domain.entities import Moneda
 from src.features.monedas.application.dtos import CrearMonedaCommand, ActualizarMonedaCommand, MonedaDto
 from src.features.monedas.application.interfaces.repositories import AbstractMonedaRepository
 from src.features.monedas.infrastructure.mappers import MonedaDTOMapper, CrearMonedaCommandMapper

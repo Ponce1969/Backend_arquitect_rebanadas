@@ -1,7 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from typing import Optional
 
 from src.features.usuarios.domain.entities import Usuario as UsuarioEntity
 from src.features.usuarios.application.use_cases import ObtenerUsuarioUseCase

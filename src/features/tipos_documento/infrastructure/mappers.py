@@ -1,12 +1,10 @@
-from typing import List, Optional
 
 from src.domain.shared.mappers import Mapper, DTOMapper
 from src.features.tipos_documento.domain.entities import TipoDocumento as TipoDocumentoEntity
 from src.features.tipos_documento.infrastructure.models import TipoDocumento as TipoDocumentoModel
 from src.features.tipos_documento.application.dtos import (
     TipoDocumentoDto,
-    CrearTipoDocumentoCommand,
-    ActualizarTipoDocumentoCommand
+    CrearTipoDocumentoCommand
 )
 
 

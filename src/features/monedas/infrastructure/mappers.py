@@ -1,13 +1,11 @@
-from typing import List, Optional
 
-from src.domain.shared.mappers import Mapper, DTOMapper, ModelDTOMapper
+from src.domain.shared.mappers import Mapper, DTOMapper
 from src.features.monedas.domain.entities import Moneda as MonedaEntity
 from src.features.monedas.infrastructure.models import Moneda as MonedaModel
 from src.features.monedas.application.dtos import (
     MonedaDto, 
     MonedaSummaryDto,
-    CrearMonedaCommand,
-    ActualizarMonedaCommand
+    CrearMonedaCommand
 )
 
 

@@ -1,7 +1,5 @@
-import re
-from typing import Any, Dict, Optional
 
-from pydantic import field_validator, model_validator, ValidationInfo
+from pydantic import field_validator, model_validator
 from src.domain.shared.validators.common import validate_codigo, validate_nombre, validate_simbolo
 
 

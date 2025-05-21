@@ -45,7 +45,7 @@ from src.features.tipos_seguros.infrastructure.repositories import SQLAlchemyTip
 from src.infrastructure.database.repositories import SQLAlchemyMonedaRepository
 
 # Importamos las dependencias de seguridad (para proteger endpoints)
-from src.infrastructure.security.dependencies import get_current_user, get_admin_user, get_corredor_user
+from src.infrastructure.security.dependencies import get_current_user, get_admin_user
 from src.features.usuarios.application.dtos import UsuarioDto
 
 # Creamos el router

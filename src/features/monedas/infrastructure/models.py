@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
-from sqlalchemy.orm import relationship
 
 from src.infrastructure.database.base import Base
 from src.features.monedas.domain.entities import Moneda as MonedaEntity

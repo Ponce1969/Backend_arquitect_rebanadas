@@ -11,12 +11,6 @@ warnings.warn(
 # Las definiciones de DTOs se han movido a sus respectivos slices
 
 # Importamos los DTOs desde sus nuevas ubicaciones
-from src.features.monedas.application.dtos import (
-    MonedaDto,
-    MonedaSummaryDto,
-    CrearMonedaCommand,
-    ActualizarMonedaCommand
-)
 
 # Nota: Este archivo será eliminado en futuras versiones.
 # Por favor, actualice sus importaciones para usar directamente los DTOs
