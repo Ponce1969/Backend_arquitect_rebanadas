@@ -1,14 +1,19 @@
 
 
 # Importamos la utilidad de hashing de contraseñas
-from infrastructure.security.password import PasswordHelper
+from datetime import datetime
+from typing import Optional, Tuple, Union
+
+from src.infrastructure.security.password import Argon2PasswordHelper as PasswordHelper
 
 from ..domain.entities import Usuario
+from ..domain.services.autenticacion_service import AutenticacionService
 from .dtos import (
     ActualizarUsuarioCommand,
     CambiarContrasenaCommand,
     LoginCommand,
     RegistroUsuarioCommand,
+    TokenDto,
     UsuarioDto,
 )
 from .interfaces.repositories import AbstractUsuarioRepository
@@ -75,31 +80,34 @@ class RegistrarUsuarioUseCase:
 
 
 class ObtenerUsuarioUseCase:
-    """Caso de uso para obtener un usuario por su ID."""
+    """
+    Caso de uso para obtener un usuario.
+    
+    Este caso de uso puede obtener un usuario por su ID o por su nombre de usuario.
+    """
 
     def __init__(self, repository: AbstractUsuarioRepository):
         self.repository = repository
 
-    def execute(self, usuario_id: int) -> UsuarioDto | None:
-        usuario = self.repository.get_by_id(usuario_id)
-        if not usuario:
-            return None
-
-        return UsuarioDto(
-            id=usuario.id,
-            nombre=usuario.nombre,
-            apellido=usuario.apellido,
-            email=usuario.email,
-            username=usuario.username,
-            is_active=usuario.is_active,
-            is_superuser=usuario.is_superuser,
-            role=usuario.role,
-            corredor_numero=usuario.corredor_numero,
-            comision_porcentaje=usuario.comision_porcentaje,
-            telefono=usuario.telefono,
-            fecha_creacion=usuario.fecha_creacion,
-            fecha_modificacion=usuario.fecha_modificacion,
-        )
+    def execute(self, usuario_id: int = None, username: str = None) -> Usuario | None:
+        """
+        Obtiene un usuario por su ID o por su nombre de usuario.
+        
+        Args:
+            usuario_id: ID del usuario a buscar (opcional)
+            username: Nombre de usuario a buscar (opcional)
+            
+        Returns:
+            Usuario: La entidad de usuario si se encuentra, None en caso contrario
+            
+        Nota:
+            Si se proporcionan tanto usuario_id como username, se prioriza el ID.
+        """
+        if usuario_id is not None:
+            return self.repository.get_by_id(usuario_id)
+        elif username is not None:
+            return self.repository.get_by_username(username)
+        return None
 
 
 class ListarUsuariosUseCase:
@@ -268,40 +276,92 @@ class EliminarUsuarioUseCase:
 
 
 class AutenticarUsuarioUseCase:
-    """Caso de uso para autenticar un usuario."""
+    """
+    Caso de uso para autenticar un usuario en el sistema.
+    
+    Este caso de uso maneja la lógica de autenticación de usuarios, incluyendo:
+    - Validación de credenciales
+    - Manejo de bloqueos por intentos fallidos
+    - Generación de tokens de acceso
+    """
 
-    def __init__(self, repository: AbstractUsuarioRepository, password_helper: PasswordHelper):
-        self.repository = repository
-        self.password_helper = password_helper
+    def __init__(
+        self, 
+        usuario_repository: AbstractUsuarioRepository, 
+        autenticacion_service: AutenticacionService
+    ):
+        """
+        Inicializa el caso de uso con las dependencias necesarias.
+        
+        Args:
+            usuario_repository: Repositorio para acceder a los datos de usuarios
+            autenticacion_service: Servicio de autenticación
+        """
+        self.usuario_repository = usuario_repository
+        self.autenticacion_service = autenticacion_service
 
-    def execute(self, command: LoginCommand) -> UsuarioDto | None:
-        # Obtener usuario por username
-        usuario = self.repository.get_by_username(command.username)
-        if not usuario or not usuario.is_active:
-            return None
+    def execute(self, command: LoginCommand) -> Tuple[Optional[UsuarioDto], Optional[str]]:
+        """
+        Autentica a un usuario con su nombre de usuario y contraseña.
+        
+        Este método es el punto de entrada principal para el proceso de autenticación.
+        Maneja la lógica de autenticación y devuelve un DTO del usuario autenticado
+        o un mensaje de error en caso de fallo.
+        
+        Args:
+            command: Comando con las credenciales de autenticación
+            
+        Returns:
+            Tuple[Optional[UsuarioDto], Optional[str]]: 
+                - DTO del usuario autenticado si las credenciales son válidas, None en caso contrario
+                - Mensaje de error si la autenticación falla, None si es exitosa
+                
+        Example:
+            >>> use_case = AutenticarUsuarioUseCase(repo, auth_service)
+            >>> usuario_dto, error = use_case.execute(LoginCommand(username="user", password="pass"))
+            >>> if usuario_dto:
+            ...     print(f"Bienvenido {usuario_dto.nombre}")
+            ... else:
+            ...     print(f"Error: {error}")
+        """
+        try:
+            # Validar que el comando no sea None
+            if not command or not command.username or not command.password:
+                return None, "Se requieren nombre de usuario y contraseña"
+            
+            # Autenticar al usuario usando el servicio de autenticación
+            usuario, error = self.autenticacion_service.autenticar_usuario(
+                command.username, command.password
+            )
+            
+            # Si hay un error o el usuario no existe, devolver el mensaje de error
+            if error or not usuario:
+                return None, error or "Credenciales inválidas"
+                
+            # Verificar si la cuenta está activa
+            if not usuario.is_active:
+                return None, "La cuenta del usuario está desactivada"
 
-        # Obtener la contraseña hasheada
-        hashed_password = self.repository.get_hashed_password(usuario.id)
-        if not hashed_password:
-            return None
-
-        # Verificar la contraseña
-        if not self.password_helper.verify_password(command.password, hashed_password):
-            return None
-
-        # Retornar DTO del usuario autenticado
-        return UsuarioDto(
-            id=usuario.id,
-            nombre=usuario.nombre,
-            apellido=usuario.apellido,
-            email=usuario.email,
-            username=usuario.username,
-            is_active=usuario.is_active,
-            is_superuser=usuario.is_superuser,
-            role=usuario.role,
-            corredor_numero=usuario.corredor_numero,
-            comision_porcentaje=usuario.comision_porcentaje,
-            telefono=usuario.telefono,
-            fecha_creacion=usuario.fecha_creacion,
-            fecha_modificacion=usuario.fecha_modificacion,
-        )
+            # Convertir la entidad de dominio a DTO para la capa de presentación
+            usuario_dto = UsuarioDto(
+                id=usuario.id,
+                nombre=usuario.nombre,
+                apellido=usuario.apellido,
+                email=usuario.email,
+                username=usuario.username,
+                is_active=usuario.is_active,
+                is_superuser=usuario.is_superuser,
+                role=usuario.role,
+                corredor_numero=usuario.corredor_numero,
+                comision_porcentaje=usuario.comision_porcentaje,
+                telefono=usuario.telefono,
+                fecha_creacion=usuario.fecha_creacion,
+                fecha_modificacion=usuario.fecha_modificacion,
+            )
+            
+            return usuario_dto, None
+            
+        except Exception as e:
+            # Registrar el error para diagnóstico
+            print(f"Error en AutenticarUsuarioUseCase: {str(e)}")
+            return None, "Ocurrió un error al procesar la autenticación"

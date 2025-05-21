@@ -15,5 +15,5 @@ class Moneda:
     fecha_actualizacion: Optional[datetime] = None
     
     def get_formatted_code(self) -> str:
-        """Retorna el cu00f3digo formateado para mostrar."""
+        """Retorna el codigo formateado para mostrar."""
         return f"{self.codigo} ({self.simbolo})"

@@ -1,35 +1,35 @@
 class MonedaException(Exception):
-    """Excepciu00f3n base para todas las excepciones relacionadas con Moneda."""
+    """Excepcion base para todas las excepciones relacionadas con Moneda."""
     pass
 
 
 class MonedaNotFoundException(MonedaException):
-    """Excepciu00f3n lanzada cuando no se encuentra una moneda."""
+    """Excepcion lanzada cuando no se encuentra una moneda."""
     
     def __init__(self, moneda_id=None, codigo=None):
         if moneda_id:
-            self.message = f"No se encontru00f3 la moneda con ID: {moneda_id}"
+            self.message = f"No se encontro la moneda con ID: {moneda_id}"
         elif codigo:
-            self.message = f"No se encontru00f3 la moneda con cu00f3digo: {codigo}"
+            self.message = f"No se encontro la moneda con codigo: {codigo}"
         else:
-            self.message = "No se encontru00f3 la moneda especificada"
+            self.message = "No se encontro la moneda especificada"
         super().__init__(self.message)
 
 
 class MonedaInvalidaException(MonedaException):
-    """Excepciu00f3n lanzada cuando se proporciona una moneda invu00e1lida."""
+    """Excepcion lanzada cuando se proporciona una moneda invalida."""
     
     def __init__(self, codigo=None):
         if codigo:
-            self.message = f"La moneda con cu00f3digo '{codigo}' no es vu00e1lida o estu00e1 inactiva"
+            self.message = f"La moneda con codigo '{codigo}' no es valida o esta inactiva"
         else:
-            self.message = "La moneda especificada no es vu00e1lida o estu00e1 inactiva"
+            self.message = "La moneda especificada no es valida o esta inactiva"
         super().__init__(self.message)
 
 
 class MonedaCodigoExistsException(MonedaException):
-    """Excepciu00f3n lanzada cuando se intenta crear una moneda con un cu00f3digo que ya existe."""
+    """Excepcion lanzada cuando se intenta crear una moneda con un codigo que ya existe."""
     
     def __init__(self, codigo):
-        self.message = f"Ya existe una moneda con el cu00f3digo: {codigo}"
+        self.message = f"Ya existe una moneda con el codigo: {codigo}"
         super().__init__(self.message)

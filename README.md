@@ -4,6 +4,27 @@
 
 API REST para la gestión de seguros desarrollada con FastAPI, SQLAlchemy y PostgreSQL, siguiendo los principios de Clean Architecture y Vertical Slicing.
 
+## Seguridad
+
+### Bloqueo de Cuentas
+
+El sistema implementa un mecanismo de bloqueo de cuentas para prevenir ataques de fuerza bruta:
+
+- Después de 5 intentos fallidos de inicio de sesión, la cuenta se bloquea temporalmente.
+- El tiempo de bloqueo predeterminado es de 30 minutos.
+- Los intentos fallidos se reinician después de 1 hora de inactividad.
+- Los administradores pueden desbloquear manualmente las cuentas bloqueadas.
+
+### Contraseñas Seguras
+
+Las contraseñas deben cumplir con los siguientes requisitos:
+
+- Mínimo 8 caracteres
+- Al menos una letra mayúscula
+- Al menos una letra minúscula
+- Al menos un número
+- Al menos un carácter especial
+
 ## Arquitectura
 
 El proyecto sigue una arquitectura limpia (Clean Architecture) combinada con vertical slicing (rebanado vertical). La estructura se organiza por características o dominios del negocio (features), donde cada slice contiene:
@@ -19,8 +40,43 @@ Las dependencias fluyen de afuera hacia adentro, nunca al revés. La inyección 
 - Gestión de monedas (CRUD completo)
 - Gestión de tipos de documento (CRUD completo)
 - Gestión de usuarios y autenticación
+  - Autenticación JWT
+  - Bloqueo de cuentas después de múltiples intentos fallidos
+  - Reinicio de contraseña
 - Gestión de corredores y clientes
 - Validación robusta con Pydantic v2
+
+## Scripts de Utilidad
+
+El proyecto incluye varios scripts de utilidad organizados en el directorio `scripts/`:
+
+### Seguridad (`scripts/security/`)
+- `generate_security_report.py`: Genera informes de seguridad sobre intentos de inicio de sesión
+- `monitor_logins.py`: Monitorea en tiempo real los intentos de inicio de sesión
+- `test_audit_system.py`: Pruebas para el sistema de auditoría
+
+### Utilidades (`scripts/utils/`)
+- `check_system.py`: Verifica la configuración del sistema y dependencias
+- `update_env.py`: Herramienta para actualizar variables de entorno
+
+### Migraciones (`scripts/migrations/`)
+- `account_lockout_migration.py`: Migración para el sistema de bloqueo de cuentas
+- `setup_audit_tables.py`: Configura las tablas de auditoría
+
+### Ejecución de scripts
+
+Para ejecutar cualquiera de estos scripts, asegúrate de estar en el directorio raíz del proyecto y activa el entorno virtual de Poetry:
+
+```bash
+# Navegar al directorio del proyecto
+cd /ruta/a/tu/proyecto
+
+# Activar el entorno virtual de Poetry
+poetry shell
+
+# Ejecutar un script (ejemplo con check_system.py)
+python -m scripts.utils.check_system
+```
 
 ## Requisitos
 
@@ -48,6 +104,11 @@ DB_PASSWORD=postgres
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=seguros_db
+
+# Seguridad
+MAX_LOGIN_ATTEMPTS=5
+ACCOUNT_LOCKOUT_MINUTES=30
+RESET_ATTEMPTS_AFTER_MINUTES=60
 
 # FastAPI
 API_PREFIX=/api/v1

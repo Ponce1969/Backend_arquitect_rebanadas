@@ -32,9 +32,9 @@ class MonedaSummaryDto(BaseModel):
 
 class CrearMonedaCommand(BaseModel):
     """DTO para crear una nueva moneda."""
-    codigo: str = Field(..., description="Cu00f3digo ISO de la moneda (3 caracteres)")
+    codigo: str = Field(..., description="Codigo ISO de la moneda (3 caracteres)")
     nombre: str = Field(..., description="Nombre completo de la moneda")
-    simbolo: str = Field(..., description="Su00edmbolo utilizado para representar la moneda")
+    simbolo: str = Field(..., description="Simbolo utilizado para representar la moneda")
     
     # Validadores de campo
     validate_codigo = field_validator('codigo')(MonedaValidators.validate_codigo)
@@ -52,17 +52,17 @@ class CrearMonedaCommand(BaseModel):
         try:
             return cls(**data)
         except ValueError as e:
-            # Convertir errores de validaciu00f3n de Pydantic a nuestras excepciones personalizadas
+            # Convertir errores de validacion de Pydantic a nuestras excepciones personalizadas
             raise ValidationError(details={"errors": str(e)})
 
 
 class ActualizarMonedaCommand(BaseModel):
     """DTO para actualizar una moneda existente."""
     id: int = Field(..., description="ID de la moneda a actualizar")
-    codigo: Optional[str] = Field(None, description="Cu00f3digo ISO de la moneda (3 caracteres)")
+    codigo: Optional[str] = Field(None, description="Codigo ISO de la moneda (3 caracteres)")
     nombre: Optional[str] = Field(None, description="Nombre completo de la moneda")
-    simbolo: Optional[str] = Field(None, description="Su00edmbolo utilizado para representar la moneda")
-    esta_activo: Optional[bool] = Field(None, description="Indica si la moneda estu00e1 activa")
+    simbolo: Optional[str] = Field(None, description="Simbolo utilizado para representar la moneda")
+    esta_activo: Optional[bool] = Field(None, description="Indica si la moneda esta activa")
     
     # Validadores condicionales (solo se aplican si el campo no es None)
     @field_validator('codigo')
@@ -86,7 +86,7 @@ class ActualizarMonedaCommand(BaseModel):
     # Validador de modelo
     @model_validator(mode='after')
     def validate_model(cls, model):
-        # Verificar que al menos un campo de actualizaciu00f3n estu00e1 presente
+        # Verificar que al menos un campo de actualizacion esta presente
         update_fields = [
             model.codigo is not None,
             model.nombre is not None,
@@ -97,7 +97,7 @@ class ActualizarMonedaCommand(BaseModel):
         if not any(update_fields):
             raise ValueError("Debe proporcionar al menos un campo para actualizar")
         
-        # Aplicar validaciones adicionales solo si los campos relevantes estu00e1n presentes
+        # Aplicar validaciones adicionales solo si los campos relevantes estan presentes
         if model.codigo is not None and model.simbolo is not None:
             # Llamar al validador de moneda con el formato correcto
             MonedaValidators.validate_moneda(model)
@@ -110,5 +110,5 @@ class ActualizarMonedaCommand(BaseModel):
         try:
             return cls(**data)
         except ValueError as e:
-            # Convertir errores de validaciu00f3n de Pydantic a nuestras excepciones personalizadas
+            # Convertir errores de validacion de Pydantic a nuestras excepciones personalizadas
             raise ValidationError(details={"errors": str(e)})

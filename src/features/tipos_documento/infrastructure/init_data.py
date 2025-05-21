@@ -17,7 +17,6 @@ def init_tipos_documento(db: Session):
     # Crear tipos de documento por defecto
     tipos_default = [
         TipoDocumento(
-            id=0,  # El ID será asignado por la base de datos
             codigo="DNI",
             nombre="Documento Nacional de Identidad",
             descripcion="Documento de identidad para ciudadanos",
@@ -25,7 +24,6 @@ def init_tipos_documento(db: Session):
             esta_activo=True
         ),
         TipoDocumento(
-            id=0,  # El ID será asignado por la base de datos
             codigo="RUT",
             nombre="Rol Único Tributario",
             descripcion="Documento de identidad fiscal",
@@ -33,7 +31,6 @@ def init_tipos_documento(db: Session):
             esta_activo=True
         ),
         TipoDocumento(
-            id=0,  # El ID será asignado por la base de datos
             codigo="PASAPORTE",
             nombre="Pasaporte",
             descripcion="Documento de viaje internacional",

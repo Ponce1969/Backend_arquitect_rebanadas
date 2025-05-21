@@ -13,7 +13,8 @@ dependencies = [
     "sqlalchemy",
     "psycopg[binary]",
     "python-jose[cryptography]",
-    "passlib[bcrypt]",
+    "passlib[bcrypt]>=1.7.4,<2.0.0",
+    "bcrypt>=4.0.1,<5.0.0",
     "pydantic>=2.0",  # si estás usando Pydantic v2
     "pydantic-settings",
     "pydantic[email]",
@@ -27,11 +28,26 @@ dependencies = [
 package-mode = false  # Esto desactiva el modo empaquetado (ideal para proyectos backend o internos)
 
 [tool.poetry.group.dev.dependencies]
+# Herramientas de desarrollo
 mypy = "^1.15.0"
 ruff = "^0.11.8"
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+pre-commit = "^3.3.3"
+
+# Tipos para type checking
 types-sqlalchemy = "^2.0.0"
 types-python-jose = "^3.3.0"
 types-passlib = "^1.7.0"
+types-psycopg2 = "^2.9.21"
+
+# Herramientas de seguridad
+bandit = "^1.7.5"
+safety = "^2.3.5"
+
+# Utilidades
+types-python-dateutil = "^2.8.19"
+types-pyyaml = "^6.0.12"
 
 [tool.ruff]
 line-length = 100

@@ -11,16 +11,16 @@ class TipoDocumento(Base):
     __table_args__ = {"extend_existing": True}
     
     id = Column(Integer, primary_key=True, index=True)
-    codigo = Column(String(10), nullable=False, unique=True)  # Codigo u00fanico (ej: DNI, RUT)
+    codigo = Column(String(10), nullable=False, unique=True)  # Codigo unico (ej: DNI, RUT)
     nombre = Column(String(50), nullable=False)  # Nombre completo
-    descripcion = Column(String(200))  # Descripciu00f3n adicional
+    descripcion = Column(String(200))  # Descripcion adicional
     es_default = Column(Boolean, default=False)  # Indica si es el tipo por defecto
-    esta_activo = Column(Boolean, default=True)  # Indica si estu00e1 activo
+    esta_activo = Column(Boolean, default=True)  # Indica si esta activo
     
     # Relaciones
     clientes = relationship("Cliente", back_populates="tipo_documento_rel", lazy="selectin")
     
-    # Mu00e9todos para mapear entre Modelo SQLAlchemy y Entidad de Dominio
+    # Metodos para mapear entre Modelo SQLAlchemy y Entidad de Dominio
     def to_entity(self) -> TipoDocumentoEntity:
         """Convierte el modelo SQLAlchemy a Entidad de Dominio."""
         return TipoDocumentoEntity(

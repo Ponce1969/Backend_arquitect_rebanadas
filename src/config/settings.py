@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 días
     
+    # Configuración de bloqueo de cuenta
+    MAX_LOGIN_ATTEMPTS: int = 5  # Número máximo de intentos fallidos antes de bloquear
+    ACCOUNT_LOCKOUT_MINUTES: int = 30  # Tiempo de bloqueo en minutos
+    RESET_ATTEMPTS_AFTER_MINUTES: int = 60  # Tiempo después del cual se reinician los intentos fallidos
+    
     # Configuración de la base de datos
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
@@ -43,6 +48,11 @@ class Settings(BaseSettings):
     
     # Configuración del frontend
     FRONTEND_URL: str = "http://localhost:5173"
+    
+    # Configuración de logs
+    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+    LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    LOG_DATEFORMAT: str = "%Y-%m-%d %H:%M:%S"
     
     @field_validator("SQLALCHEMY_DATABASE_URI", mode="before")
     @classmethod

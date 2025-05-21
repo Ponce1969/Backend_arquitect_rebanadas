@@ -2,9 +2,10 @@ import os
 import sys
 import uvicorn
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 # Configuración del logger
 logging.basicConfig(level=logging.INFO)
@@ -44,10 +45,17 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
-# Configurar manejadores de excepciones
-app.add_exception_handler(APIError, global_exception_handler)
-app.add_exception_handler(RequestValidationError, global_exception_handler)
-app.add_exception_handler(Exception, global_exception_handler)
+# Middleware para manejar excepciones
+@app.middleware("http")
+async def catch_exceptions_middleware(request: Request, call_next):
+    try:
+        return await call_next(request)
+    except APIError as e:
+        return JSONResponse(status_code=e.status_code, content={"message": e.detail})
+    except RequestValidationError as e:
+        return JSONResponse(status_code=422, content={"message": "Error de validación", "errors": e.errors()})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"message": "Error interno del servidor"})
 
 # Configurar CORS
 if settings.BACKEND_CORS_ORIGINS:
@@ -64,7 +72,10 @@ app.include_router(aseguradoras_router, prefix=settings.API_V1_STR)
 app.include_router(clientes_router, prefix=settings.API_V1_STR)
 app.include_router(corredores_router, prefix=settings.API_V1_STR)
 app.include_router(sustituciones_corredores_router, prefix=settings.API_V1_STR)
-app.include_router(usuarios_router, prefix=settings.API_V1_STR)
+app.include_router(
+    usuarios_router,
+    prefix=settings.API_V1_STR
+)
 app.include_router(polizas_router, prefix=settings.API_V1_STR)
 app.include_router(tipos_seguro_router, prefix=settings.API_V1_STR)
 app.include_router(monedas_router, prefix=settings.API_V1_STR)
