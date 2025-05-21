@@ -1,6 +1,6 @@
 
 from pydantic import field_validator, model_validator
-from src.features.shared.validators.common import validate_codigo, validate_nombre, validate_simbolo
+from src.domain.shared.validators.common import validate_codigo, validate_nombre, validate_simbolo
 
 
 class MonedaValidators:
@@ -9,11 +9,11 @@ class MonedaValidators:
     @classmethod
     @field_validator('codigo')
     def validate_codigo(cls, value: str) -> str:
-        """Valida que el cu00f3digo de moneda tenga el formato correcto."""
-        # Validación básica
+        """Valida que el codigo de moneda tenga el formato correcto."""
+        # Validacion basica
         value = validate_codigo(value)
         
-        # Validación específica para monedas (3 caracteres, como ISO 4217)
+        # Validacion especifica para monedas (3 caracteres, como ISO 4217)
         if len(value) != 3:
             raise ValueError("El código de moneda debe tener exactamente 3 caracteres (formato ISO 4217)")
             
@@ -38,8 +38,8 @@ class MonedaValidators:
         # Ejemplo: validar que si el código es USD, el símbolo debe ser $
         if hasattr(model, 'codigo') and hasattr(model, 'simbolo'):
             if model.codigo == 'USD' and model.simbolo != '$':
-                raise ValueError("El símbolo para USD debe ser $")
+                raise ValueError("El simbolo para USD debe ser $")
             elif model.codigo == 'EUR' and model.simbolo != '€':
-                raise ValueError("El símbolo para EUR debe ser €")
+                raise ValueError("El simbolo para EUR debe ser €")
         
         return model

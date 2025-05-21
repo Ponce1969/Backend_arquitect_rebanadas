@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 from src.features.monedas.application.validators.moneda_validators import MonedaValidators
-from src.features.shared.exceptions import ValidationError
+from src.domain.shared.exceptions import ValidationError
 
 
 class MonedaDto(BaseModel):

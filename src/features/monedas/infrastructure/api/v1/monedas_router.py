@@ -9,7 +9,7 @@ from src.features.monedas.application.use_cases import (
 )
 from src.features.monedas.domain.exceptions import MonedaNotFoundException, MonedaInvalidaException, MonedaCodigoExistsException
 from src.features.monedas.infrastructure.repositories import SQLAlchemyMonedaRepository
-from src.features.shared.exceptions import ValidationError
+from src.domain.shared.exceptions import ValidationError
 from src.infrastructure.database import get_db
 from src.infrastructure.security.dependencies import get_current_user, get_admin_user
 from src.features.usuarios.application.dtos import UsuarioDto

@@ -1,5 +1,5 @@
 
-from src.features.shared.mappers import Mapper, DTOMapper
+from src.infrastructure.mappers import Mapper, DTOMapper
 from src.features.monedas.domain.entities import Moneda as MonedaEntity
 from src.features.monedas.infrastructure.models import Moneda as MonedaModel
 from src.features.monedas.application.dtos import (
