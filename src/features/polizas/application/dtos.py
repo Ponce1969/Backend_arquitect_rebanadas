@@ -11,7 +11,7 @@ from src.features.polizas.domain.types import TipoDuracion
 from src.features.clientes.application.dtos import ClienteDto
 from src.features.corredores.application.dtos import CorredorDto
 from src.features.tipos_seguros.application.dtos import TipoSeguroDto
-from src.domain.shared.dtos import MonedaDto
+from src.features.monedas.application.dtos import MonedaDto
 
 
 # DTO para crear una nueva poliza (entrada a EmitirPolizaUseCase)

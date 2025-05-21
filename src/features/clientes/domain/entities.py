@@ -3,7 +3,7 @@ from datetime import date, datetime
 from uuid import UUID
 
 # Importamos la entidad TipoDocumento del dominio compartido
-from src.domain.shared.entities import TipoDocumento
+from src.features.tipos_documento.domain.entities import TipoDocumento
 
 
 @dataclass

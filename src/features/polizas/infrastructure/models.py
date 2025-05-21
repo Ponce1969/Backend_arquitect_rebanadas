@@ -13,7 +13,7 @@ from src.features.clientes.infrastructure.models import Cliente as ClienteModel
 from src.features.corredores.infrastructure.models import Corredor as CorredorModel
 from src.features.tipos_seguros.infrastructure.models import TipoSeguro as TipoSeguroModel
 # Asumimos que existe un modelo Moneda en la infraestructura compartida
-# from src.infrastructure.database.models import Moneda as MonedaModel
+# from src.features.monedas.infrastructure.models import Moneda as MonedaModel
 
 # Importamos la Entidad de Dominio Poliza para mapear
 from src.features.polizas.domain.entities import Poliza as PolizaEntity

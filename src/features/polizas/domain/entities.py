@@ -6,7 +6,7 @@ from typing import Optional
 from src.features.clientes.domain.entities import Cliente
 from src.features.corredores.domain.entities import Corredor
 from src.features.tipos_seguros.domain.entities import TipoSeguro
-from src.domain.shared.entities import Moneda
+from src.features.monedas.domain.entities import Moneda
 
 # Importamos los tipos del dominio (TipoDuracion)
 from .types import TipoDuracion
