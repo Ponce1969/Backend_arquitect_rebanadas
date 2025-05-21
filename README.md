@@ -29,6 +29,12 @@ Las contraseñas deben cumplir con los siguientes requisitos:
 
 El proyecto sigue una arquitectura limpia (Clean Architecture) combinada con vertical slicing (rebanado vertical). La estructura se organiza por características o dominios del negocio (features), donde cada slice contiene:
 
+### Migración a Rebanadas Verticales
+
+Actualmente el proyecto está en proceso de migración desde una arquitectura monolítica tradicional hacia una arquitectura de rebanadas verticales. Durante esta transición, se mantienen algunos archivos de compatibilidad que serán eliminados en futuras versiones.
+
+Para más detalles sobre el proceso de migración y cómo actualizar tu código, consulta la [Guía de Migración](docs/migracion_arquitectura.md).
+
 1. **Dominio (Domain)**: Entidades puras de negocio sin dependencias externas
 2. **Aplicación (Application)**: Casos de uso e interfaces de repositorio
 3. **Infraestructura (Infrastructure)**: Implementaciones concretas (modelos SQLAlchemy, repositorios, routers)

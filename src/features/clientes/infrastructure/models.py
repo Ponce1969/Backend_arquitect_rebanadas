@@ -14,7 +14,8 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from src.features.tipos_documento.infrastructure.models import TipoDocumento as TipoDocumentoModel
+# Importación diferida para evitar dependencia circular
+# from src.features.tipos_documento.infrastructure.models import TipoDocumento as TipoDocumentoModel
 from src.infrastructure.database import Base
 
 
@@ -92,7 +93,7 @@ class Cliente(Base):
         lazy="selectin",
     )
     tipo_documento_rel = relationship(
-        TipoDocumentoModel,
+        "TipoDocumento",  # Usar referencia de cadena para evitar dependencia circular
         back_populates="clientes",
         lazy="selectin",
     )
