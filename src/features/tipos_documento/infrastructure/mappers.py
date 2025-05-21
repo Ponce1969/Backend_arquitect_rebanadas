@@ -1,5 +1,5 @@
 
-from src.features.shared.mappers import Mapper, DTOMapper
+from src.infrastructure.mappers import Mapper, DTOMapper
 from src.features.tipos_documento.domain.entities import TipoDocumento as TipoDocumentoEntity
 from src.features.tipos_documento.infrastructure.models import TipoDocumento as TipoDocumentoModel
 from src.features.tipos_documento.application.dtos import (

@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List, Optional
 
-from src.features.shared.interfaces.repositories import AbstractBaseRepository
+from src.infrastructure.interfaces.repositories import AbstractBaseRepository
 from src.features.tipos_documento.domain.entities import TipoDocumento
 
 
