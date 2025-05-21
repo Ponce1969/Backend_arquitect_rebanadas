@@ -1,5 +1,5 @@
 
-from src.domain.shared.mappers import Mapper, DTOMapper
+from src.features.shared.mappers import Mapper, DTOMapper
 from src.features.tipos_documento.domain.entities import TipoDocumento as TipoDocumentoEntity
 from src.features.tipos_documento.infrastructure.models import TipoDocumento as TipoDocumentoModel
 from src.features.tipos_documento.application.dtos import (
@@ -8,7 +8,7 @@ from src.features.tipos_documento.application.dtos import (
 )
 
 
-class TipoDocumentoMapper(Mapper[TipoDocumentoEntity, TipoDocumentoModel]):
+class TipoDocumentoMapper(Mapper):
     """Mapper entre la entidad TipoDocumento y el modelo TipoDocumentoModel."""
     
     @staticmethod
@@ -44,7 +44,7 @@ class TipoDocumentoMapper(Mapper[TipoDocumentoEntity, TipoDocumentoModel]):
         )
 
 
-class TipoDocumentoDTOMapper(DTOMapper[TipoDocumentoEntity, TipoDocumentoDto]):
+class TipoDocumentoDTOMapper(DTOMapper):
     """Mapper entre la entidad TipoDocumento y el DTO TipoDocumentoDto."""
     
     @staticmethod
@@ -80,7 +80,7 @@ class TipoDocumentoDTOMapper(DTOMapper[TipoDocumentoEntity, TipoDocumentoDto]):
         )
 
 
-class CrearTipoDocumentoCommandMapper(DTOMapper[TipoDocumentoEntity, CrearTipoDocumentoCommand]):
+class CrearTipoDocumentoCommandMapper(DTOMapper):
     """Mapper entre la entidad TipoDocumento y el comando CrearTipoDocumentoCommand."""
     
     @staticmethod

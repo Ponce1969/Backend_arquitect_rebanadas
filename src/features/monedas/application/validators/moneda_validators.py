@@ -1,6 +1,6 @@
 
 from pydantic import field_validator, model_validator
-from src.domain.shared.validators.common import validate_codigo, validate_nombre, validate_simbolo
+from src.features.shared.validators.common import validate_codigo, validate_nombre, validate_simbolo
 
 
 class MonedaValidators:

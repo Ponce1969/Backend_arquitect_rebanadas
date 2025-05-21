@@ -1,5 +1,5 @@
 
-from src.domain.shared.mappers import Mapper, DTOMapper
+from src.features.shared.mappers import Mapper, DTOMapper
 from src.features.monedas.domain.entities import Moneda as MonedaEntity
 from src.features.monedas.infrastructure.models import Moneda as MonedaModel
 from src.features.monedas.application.dtos import (
@@ -9,7 +9,7 @@ from src.features.monedas.application.dtos import (
 )
 
 
-class MonedaMapper(Mapper[MonedaEntity, MonedaModel]):
+class MonedaMapper(Mapper):
     """Mapper entre la entidad Moneda y el modelo MonedaModel."""
     
     @staticmethod
@@ -45,7 +45,7 @@ class MonedaMapper(Mapper[MonedaEntity, MonedaModel]):
         )
 
 
-class MonedaDTOMapper(DTOMapper[MonedaEntity, MonedaDto]):
+class MonedaDTOMapper(DTOMapper):
     """Mapper entre la entidad Moneda y el DTO MonedaDto."""
     
     @staticmethod
@@ -81,7 +81,7 @@ class MonedaDTOMapper(DTOMapper[MonedaEntity, MonedaDto]):
         )
 
 
-class MonedaSummaryDTOMapper(DTOMapper[MonedaEntity, MonedaSummaryDto]):
+class MonedaSummaryDTOMapper(DTOMapper):
     """Mapper entre la entidad Moneda y el DTO MonedaSummaryDto."""
     
     @staticmethod
@@ -111,7 +111,7 @@ class MonedaSummaryDTOMapper(DTOMapper[MonedaEntity, MonedaSummaryDto]):
         )
 
 
-class CrearMonedaCommandMapper(DTOMapper[MonedaEntity, CrearMonedaCommand]):
+class CrearMonedaCommandMapper(DTOMapper):
     """Mapper entre la entidad Moneda y el comando CrearMonedaCommand."""
     
     @staticmethod
