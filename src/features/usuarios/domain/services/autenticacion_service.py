@@ -11,6 +11,7 @@ from argon2 import PasswordHasher
 
 from src.features.usuarios.domain.entities import Usuario as UsuarioEntity
 from src.features.usuarios.application.interfaces.repositories import AbstractUsuarioRepository
+from src.infrastructure.security.password import PasswordHelper
 
 # Configuración de bloqueo de cuentas
 MAX_INTENTOS_FALLIDOS = 5
@@ -153,6 +154,26 @@ class AutenticacionService:
         usuario.bloqueado_hasta = None
         self.usuario_repository.update(usuario)
     
+    def _actualizar_hash_si_es_necesario(self, usuario: UsuarioEntity, contrasena: str) -> None:
+        """
+        Actualiza el hash de la contraseña de un usuario si es necesario.
+        
+        Args:
+            usuario: Entidad de usuario a actualizar
+            contrasena: Contraseña en texto plano
+            
+        Raises:
+            ValueError: Si el usuario no es válido
+        """
+        if not usuario:
+            raise ValueError("El usuario no puede ser None")
+            
+        # Verificar si el hash es bcrypt
+        if usuario.hashed_password.startswith("$2b$"):
+            # Actualizar el hash a Argon2
+            usuario.hashed_password = self.obtener_hash_contrasena(contrasena)
+            self.usuario_repository.update(usuario)
+
     def autenticar_usuario(
         self, username: str, contrasena: str
     ) -> Tuple[Optional[UsuarioEntity], Optional[str]]:
@@ -196,16 +217,21 @@ class AutenticacionService:
             return None, mensaje_bloqueo
         
         # Verificar la contraseña
-        if not self.verificar_contrasena(contrasena, usuario.hashed_password):
+        contrasena_valida = self.verificar_contrasena(contrasena, usuario.hashed_password)
+        
+        if not contrasena_valida:
             # Registrar el intento fallido
             self.registrar_intento_fallido(usuario)
             return None, "Credenciales inválidas"
         
+        # Autenticación exitosa, reiniciar intentos fallidos
+        self._reiniciar_intentos_fallidos(usuario)
+        
+        # Si el hash es bcrypt, actualizarlo a Argon2
+        self._actualizar_hash_si_es_necesario(usuario, contrasena)
+        
         # Si la cuenta está inactiva
         if not usuario.is_active:
             return None, "La cuenta está deshabilitada"
-        
-        # Si todo es correcto, reiniciamos los intentos fallidos
-        self._reiniciar_intentos_fallidos(usuario)
         
         return usuario, None

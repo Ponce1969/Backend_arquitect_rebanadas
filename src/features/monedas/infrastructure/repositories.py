@@ -15,11 +15,11 @@ class SQLAlchemyMonedaRepository(AbstractMonedaRepository):
         self.session = session
     
     @cached(expiry_seconds=3600, key_prefix="moneda_id_")
-    def get_by_id(self, moneda_id: int) -> MonedaEntity:
+    def get_by_id(self, entity_id: int) -> MonedaEntity:
         """Obtiene una moneda por su ID."""
-        moneda = self.session.query(Moneda).filter(Moneda.id == moneda_id).first()
+        moneda = self.session.query(Moneda).filter(Moneda.id == entity_id).first()
         if not moneda:
-            raise MonedaNotFoundException(moneda_id=moneda_id)
+            raise MonedaNotFoundException(moneda_id=entity_id)
         return MonedaMapper.to_entity(moneda)
     
     @cached(expiry_seconds=3600, key_prefix="moneda_codigo_")
@@ -33,9 +33,16 @@ class SQLAlchemyMonedaRepository(AbstractMonedaRepository):
         return MonedaMapper.to_entity(moneda)
     
     @cached(expiry_seconds=3600, key_prefix="monedas_all")
-    def get_all(self) -> list[MonedaEntity]:
-        """Obtiene todas las monedas."""
-        monedas = self.session.query(Moneda).filter(Moneda.esta_activo == True).all()
+    def get_all(self, skip: int = 0, limit: int = 100) -> list[MonedaEntity]:
+        """Obtiene todas las monedas con soporte para paginación."""
+        query = self.session.query(Moneda).filter(Moneda.esta_activo == True)
+        
+        if skip > 0:
+            query = query.offset(skip)
+        if limit > 0:
+            query = query.limit(limit)
+            
+        monedas = query.all()
         return MonedaMapper.to_entity_list(monedas)
     
     def add(self, moneda: MonedaEntity) -> MonedaEntity:
@@ -89,18 +96,16 @@ class SQLAlchemyMonedaRepository(AbstractMonedaRepository):
         
         return MonedaMapper.to_entity(db_moneda)
     
-    def delete(self, moneda_id: int) -> bool:
+    def delete(self, entity_id: int) -> None:
         """Elimina una moneda (marcandola como inactiva)."""
-        db_moneda = self.session.query(Moneda).filter(Moneda.id == moneda_id).first()
+        db_moneda = self.session.query(Moneda).filter(Moneda.id == entity_id).first()
         if not db_moneda:
-            raise MonedaNotFoundException(moneda_id=moneda_id)
+            raise MonedaNotFoundException(moneda_id=entity_id)
         
         db_moneda.esta_activo = False
         self.session.commit()
         
         # Limpiar caché después de eliminar
-        clear_cache(f"moneda_id_{moneda_id}")
+        clear_cache(f"moneda_id_{entity_id}")
         clear_cache(f"moneda_codigo_{db_moneda.codigo}")
         clear_cache("monedas_")
-        
-        return True
