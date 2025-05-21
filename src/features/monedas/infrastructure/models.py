@@ -1,15 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
 
 from src.infrastructure.database.base import Base
 from src.features.monedas.domain.entities import Moneda as MonedaEntity
-
-
-# Definición de la función helper para el tiempo
-def get_utc_now():
-    """Función helper para obtener el tiempo UTC actual en UTC."""
-    return datetime.now(timezone.utc)
+from src.infrastructure.utils.datetime import get_utc_now
 
 
 class Moneda(Base):

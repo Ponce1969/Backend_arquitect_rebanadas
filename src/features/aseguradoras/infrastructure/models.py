@@ -1,14 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from src.infrastructure.database import Base
-
-
-def get_utc_now():
-    """Función helper para obtener el tiempo UTC actual"""
-    return datetime.now(timezone.utc)
+from src.infrastructure.utils.datetime import get_utc_now
 
 
 class Aseguradora(Base):

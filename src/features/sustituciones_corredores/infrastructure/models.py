@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import (
     Column,
@@ -16,12 +16,8 @@ from src.features.sustituciones_corredores.domain.entities import SustitucionCor
 
 # Importamos la Base desde la infraestructura compartida
 from src.infrastructure.database import Base
-
-
-# Definiciu00f3n de la funciu00f3n helper para el tiempo (si no estu00e1 en un util compartido)
-def get_utc_now():
-    """Funciu00f3n helper para obtener el tiempo UTC actual."""
-    return datetime.now(timezone.utc)
+# Importamos la función de tiempo desde la utilidad centralizada
+from src.infrastructure.utils.datetime import get_utc_now
 
 
 # --- Modelo SQLAlchemy para la tabla SustitucionesCorredores ---

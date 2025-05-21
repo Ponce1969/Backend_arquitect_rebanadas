@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
@@ -9,12 +9,7 @@ from src.infrastructure.database.base import Base
 # Importamos la Entidad de Dominio TipoSeguro para mapear
 from src.features.tipos_seguros.domain.entities import TipoSeguro as TipoSeguroEntity
 # Importamos la Entidad de Dominio Aseguradora para mapear
-
-
-# Definición de la función helper para el tiempo
-def get_utc_now():
-    """Función helper para obtener el tiempo UTC actual en UTC."""
-    return datetime.now(timezone.utc)
+from src.infrastructure.utils.datetime import get_utc_now
 
 
 class TipoSeguro(Base):  # Modelo SQLAlchemy

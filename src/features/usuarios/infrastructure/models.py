@@ -4,7 +4,7 @@ Modelos de base de datos para el módulo de usuarios.
 Este módulo contiene las definiciones de los modelos SQLAlchemy utilizados
 para interactuar con la base de datos en el contexto de usuarios.
 """
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, Type, TypeVar
 
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, event
@@ -13,20 +13,11 @@ from sqlalchemy.orm import relationship
 from src.config.settings import settings
 from src.features.usuarios.domain.types import Role
 from src.infrastructure.database import Base
+from src.infrastructure.utils.datetime import get_utc_now
 from ..domain.entities import Usuario as UsuarioEntity
 
 # Type variable para métodos de clase
 T = TypeVar('T', bound='Usuario')
-
-
-def get_utc_now() -> datetime:
-    """
-    Función helper para obtener el tiempo UTC actual.
-    
-    Returns:
-        datetime: Fecha y hora actual en UTC.
-    """
-    return datetime.now(timezone.utc)
 
 
 class Usuario(Base):

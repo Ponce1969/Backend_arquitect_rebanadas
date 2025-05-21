@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import (
     Column,
@@ -17,11 +17,7 @@ from sqlalchemy.orm import relationship
 # Importación diferida para evitar dependencia circular
 # from src.features.tipos_documento.infrastructure.models import TipoDocumento as TipoDocumentoModel
 from src.infrastructure.database import Base
-
-
-def get_utc_now():
-    """Función helper para obtener el tiempo UTC actual"""
-    return datetime.now(timezone.utc)
+from src.infrastructure.utils.datetime import get_utc_now
 
 
 class Cliente(Base):

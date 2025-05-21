@@ -1,4 +1,4 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 
 from sqlalchemy import (
     Column,
@@ -6,7 +6,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
-    Text,  # Importar para constraint u00fanico compuesto
+    Text,  # Importar para constraint unico compuesto
 )
 from sqlalchemy.dialects.postgresql import (
     UUID as SQLAlchemyUUID,  # Usar alias para evitar conflicto con uuid.UUID
@@ -18,12 +18,8 @@ from src.features.corredores.domain.entities import Corredor as CorredorEntity
 
 # Importamos la Base desde la infraestructura compartida
 from src.infrastructure.database import Base
-
-
-# Definiciou00f3n de la funciou00f3n helper para el tiempo (si no estou00e1 en un util compartido)
-def get_utc_now():
-    """Funciou00f3n helper para obtener el tiempo UTC actual en UTC."""
-    return datetime.now(timezone.utc)
+# Importamos la función de tiempo desde la utilidad centralizada
+from src.infrastructure.utils.datetime import get_utc_now
 
 
 # --- Modelo SQLAlchemy para la tabla intermedia ClienteCorredor ---
@@ -38,8 +34,8 @@ class ClienteCorredor(Base):
     fecha_asignacion = Column(Date, default=date.today) # Usar date.today() o get_utc_now().date()
 
     # Definimos relaciones con los modelos principales
-    # Usamos viewonly=True en una direcciou00f3n si no queremos que SQLAlchemy maneje la colecciou00f3n en este modelo intermedio
-    # O definimos back_populates si queremos la colecciou00f3n de asociaciones
+    # Usamos viewonly=True en una direccion si no queremos que SQLAlchemy maneje la coleccion en este modelo intermedio
+    # O definimos back_populates si queremos la coleccion de asociaciones
     # Para simplificar, definimos las relaciones a Cliente y CorredorModel
     cliente_rel = relationship("Cliente", back_populates="corredores_asociados")
     corredor_rel = relationship("Corredor", back_populates="clientes_asociados")
@@ -51,8 +47,8 @@ class Corredor(Base):
 
     __tablename__ = "corredores"
 
-    # Identificaciou00f3n (usando Integer ID y Integer Numero segu00fan tu modelo original)
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # Clave primaria tou00e9cnica
+    # Identificacion (usando Integer ID y Integer Numero segu00fan tu modelo original)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # Clave primaria tecnica
     numero = Column(Integer, unique=True, index=True, nullable=False)  # Identificador de negocio
     tipo = Column(String(20), default="corredor")
     nombres = Column(String(30))
@@ -74,38 +70,38 @@ class Corredor(Base):
     especializacion = Column(String(100))
 
     # Relaciones a Modelos SQLAlchemy
-    # Un corredor tiene mu00faltiples usuarios asociados
+    # Un corredor tiene multiples usuarios asociados
     usuarios = relationship(
         "Usuario", # Usamos el nombre del Modelo SQLAlchemy importado
-        back_populates="corredor_rel", # Nombre de la relaciou00f3n en el modelo UsuarioModel
+        back_populates="corredor_rel", # Nombre de la relacion en el modelo UsuarioModel
         lazy="selectin" # Carga eager
     )
-    # Un corredor tiene mu00faltiples clientes asociados (a travou00e9s del modelo intermedio)
+    # Un corredor tiene multiples clientes asociados (a travou00e9s del modelo intermedio)
     clientes_asociados = relationship(
         "ClienteCorredor", # Usamos el nombre del Modelo SQLAlchemy intermedio
-        back_populates="corredor_rel", # Nombre de la relaciou00f3n en el modelo ClienteCorredor
+        back_populates="corredor_rel", # Nombre de la relacion en el modelo ClienteCorredor
         lazy="selectin" # Carga eager
     )
-    # Relaciou00f3n con movimientos (modelo MovimientoVigencia)
+    # Relacion con movimientos (modelo MovimientoVigencia)
     movimientos = relationship("MovimientoVigencia", back_populates="corredor_rel", lazy="selectin")
 
-    # Mou00e9todos para mapear a Entidad de Dominio
+    # Metodos para mapear a Entidad de Dominio
     def to_entity(self) -> CorredorEntity:
         """Convierte el modelo SQLAlchemy a Entidad de Dominio."""
         # Mapear relaciones cargadas a Entidades de Dominio si existen
         usuarios_entities = [u.to_entity() for u in self.usuarios] if self.usuarios else []
 
-        # Para la relaciou00f3n muchos-a-muchos a clientes a travou00e9s de ClienteCorredor:
-        # Mapeamos la relaciou00f3n ClienteCorredorModel a la lista de ClienteEntity
+        # Para la relacion muchos-a-muchos a clientes a travou00e9s de ClienteCorredor:
+        # Mapeamos la relacion ClienteCorredorModel a la lista de ClienteEntity
         clientes_entities = [
-             cc_rel.cliente_rel.to_entity() # Accedemos al modelo Cliente a travou00e9s de la relaciou00f3n en ClienteCorredor
+             cc_rel.cliente_rel.to_entity() # Accedemos al modelo Cliente a travou00e9s de la relacion en ClienteCorredor
              for cc_rel in self.clientes_asociados # Iteramos sobre las instancias de ClienteCorredorModel
-             if cc_rel.cliente_rel is not None # Asegurarse de que la relaciou00f3n al ClienteModel estou00e9 cargada y no sea None
+             if cc_rel.cliente_rel is not None # Asegurarse de que la relacion al ClienteModel esta cargada y no sea None
         ] if self.clientes_asociados else []
 
 
         return CorredorEntity(
-            # id=self.id, # Omitimos el ID tou00e9cnico si el numero es el identificador principal en dominio
+            # id=self.id, # Omitimos el ID tecnico si el numero es el identificador principal en dominio
             numero=self.numero, # Usamos el numero como identificador en dominio
             tipo=self.tipo,
             nombres=self.nombres,
@@ -130,7 +126,7 @@ class Corredor(Base):
     def from_entity(corredor: CorredorEntity) -> 'Corredor': # Retorna una instancia de este modelo SQLAlchemy
         """Convierte una Entidad de Dominio a Modelo SQLAlchemy."""
         return Corredor( # Crea una instancia del modelo SQLAlchemy
-            # id=corredor.id, # ID tou00e9cnico para update/delete, None para add
+            # id=corredor.id, # ID tecnico para update/delete, None para add
             numero=corredor.numero, # Numero para add (si no es autogenerado) o update/delete
             tipo=corredor.tipo,
             nombres=corredor.nombres,
@@ -146,5 +142,5 @@ class Corredor(Base):
             fecha_baja=corredor.fecha_baja,
             matricula=corredor.matricula,
             especializacion=corredor.especializacion,
-            # No mapeamos listas de entidades aquu00ed en from_entity del Corredor principal
+            # No mapeamos listas de entidades aqui en from_entity del Corredor principal
         )
