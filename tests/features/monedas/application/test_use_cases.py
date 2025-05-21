@@ -44,7 +44,7 @@ def crear_moneda_command():
     return CrearMonedaCommand(
         codigo="EUR",
         nombre="Euro",
-        simbolo="u20ac"
+        simbolo="€"
     )
 
 

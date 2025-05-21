@@ -23,7 +23,7 @@ class ValidationError(APIError):
     def __init__(self, details: dict = None):
         super().__init__(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            message="Error de validación",
+            message="Error de validacion",
             details=details
         )
 
@@ -77,7 +77,7 @@ async def global_exception_handler(request, exc: Exception) -> JSONResponse:
             status_code=422,
             content={
                 "error": {
-                    "message": "Error de validación",
+                    "message": "Error de validacion",
                     "details": {
                         "errors": exc.errors() if hasattr(exc, "errors") else str(exc)
                     }

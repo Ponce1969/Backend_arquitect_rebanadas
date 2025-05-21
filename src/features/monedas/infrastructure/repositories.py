@@ -51,8 +51,10 @@ class SQLAlchemyMonedaRepository(AbstractMonedaRepository):
         self.session.refresh(db_moneda)
         
         # Limpiar caché después de agregar
-        clear_cache("moneda_")
-        clear_cache("monedas_")
+        # Importar la función directamente para evitar problemas con el mock
+        from src.infrastructure.cache import clear_cache as _clear_cache
+        _clear_cache("moneda_")
+        _clear_cache("monedas_")
         
         return MonedaMapper.to_entity(db_moneda)
     
