@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import List, Optional
 
 # Importamos la interfaz del repositorio
@@ -15,11 +15,7 @@ from src.features.tipos_seguros.application.dtos import (
 
 # Importamos el repositorio de aseguradoras
 from src.features.aseguradoras.application.interfaces.repositories import AbstractAseguradoraRepository
-
-
-def get_utc_now():
-    """Funciu00f3n helper para obtener el tiempo UTC actual"""
-    return datetime.now(timezone.utc)
+from src.infrastructure.utils.datetime import get_utc_now
 
 
 class CrearTipoSeguroUseCase:
